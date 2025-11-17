@@ -25,7 +25,7 @@
     return item;
   }
 
-  // --- Render helpers (visual) ---
+  // --- Helpers de renderizado (visual) ---
   function clearNode(n){ while(n && n.firstChild) n.removeChild(n.firstChild); }
   function renderVector(container, v){
     if(!container) return;
@@ -53,7 +53,7 @@
 
   function renderScalar(container, k){ if(!container) return; container.textContent = isNaN(k)? '(no válido)': fmt(k); }
 
-  // --- Steps generators and renderer ---
+  // --- Generadores de pasos y renderizado ---
   function renderSteps(container, steps){
     if(!container) return; clearNode(container);
     if(!steps || steps.length===0){ container.textContent='(sin pasos)'; return; }
@@ -67,7 +67,7 @@
     container.appendChild(ol);
   }
 
-  // Interactive steps state and helpers
+  // Estado interactivo de los pasos y utilidades
   const stepsState = {
     vectores: { steps: [], idx: 0, showAll: false },
     matrices: { steps: [], idx: 0, showAll: false }
@@ -82,7 +82,7 @@
     clearNode(container);
     if(!st.steps || st.steps.length===0){ container.textContent='(sin pasos)'; if(controls) controls.style.display='none'; if(counter) counter.textContent=''; return; }
     if(st.showAll){ renderSteps(container, st.steps); if(controls) controls.style.display='flex'; if(counter) counter.textContent='Mostrando todos los pasos'; return; }
-    // show single step
+    // mostrar paso individual
     const idx = Math.max(0, Math.min(st.idx, st.steps.length-1));
     const div = document.createElement('div'); div.className='step-item'; div.textContent = st.steps[idx]; container.appendChild(div);
     if(controls) controls.style.display='flex'; if(counter) counter.textContent = 'Paso '+(idx+1)+' / '+st.steps.length;
@@ -96,7 +96,7 @@
   function stepPrev(section){ const st=stepsState[section]; if(!st.steps || st.steps.length===0) return; st.idx = Math.max(st.idx-1, 0); renderCurrentStep(section); }
   function stepToggleAll(section){ const st=stepsState[section]; st.showAll = !st.showAll; renderCurrentStep(section); }
 
-  // Wire controls for steps (prev/next/show-all)
+  // Enlazar controles para pasos (anterior/siguiente/mostrar todo)
   const wireStepControls = ()=>{
     const mappings = [ ['vectores','prev-step-vectores','next-step-vectores','show-all-steps-vectores'], ['matrices','prev-step-matrices','next-step-matrices','show-all-steps-matrices'] ];
     mappings.forEach(([section,prevId,nextId,allId])=>{
@@ -108,7 +108,7 @@
     });
   };
 
-  // Previews refresh (used when decimals change or inputs change)
+  // Actualizar vistas previas (usado cuando cambian decimales o inputs)
   function refreshPreviews(){
     const pA=$('preview-vecA'), pB=$('preview-vecB'), pe=$('preview-escalar');
     if(pA) renderVector(pA, parseVector($('vecA').value));
@@ -195,7 +195,7 @@
     for(let i=0;i<n;i++){
       // pivote parcial
       let maxRow=i; for(let k=i+1;k<n;k++) if(Math.abs(A[k][i])>Math.abs(A[maxRow][i])) maxRow=k;
-      if(maxRow!==i){ steps.push(`Swap fila ${i+1} con fila ${maxRow+1}`); [A[i],A[maxRow]]=[A[maxRow],A[i]]; [b[i],b[maxRow]]=[b[maxRow],b[i]]; steps.push('A = '+matToStr(A)+' , b = '+vecToStr(b)); }
+      if(maxRow!==i){ steps.push(`Intercambiar fila ${i+1} con fila ${maxRow+1}`); [A[i],A[maxRow]]=[A[maxRow],A[i]]; [b[i],b[maxRow]]=[b[maxRow],b[i]]; steps.push('A = '+matToStr(A)+' , b = '+vecToStr(b)); }
       if(Math.abs(A[i][i])<1e-12) throw 'Matriz singular o sistema mal condicionado (pivote cero)';
       for(let k=i+1;k<n;k++){
         const c = A[k][i]/A[i][i];
@@ -212,7 +212,7 @@
     return {x, steps};
   }
 
-  // ------ Nuevas utilidades: validación, impresión, visualización, operaciones avanzadas, práctica ------
+  // ------ Nuevas utilidades: validación, impresión, visualización, operaciones avanzadas y práctica ------
 
   function validateVectors(A,B){
     if(!Array.isArray(A) || !Array.isArray(B)) return {ok:false, msg:'Entrada no es un vector válido', suggestion:'Usa formato: 1,2,3'};
@@ -247,25 +247,25 @@
     const A = parseVector($('vecA').value), B = parseVector($('vecB').value);
     const dim = document.querySelector('input[name="viz-dim"]:checked').value;
     const rotX = parseFloat($('rotX').value) * Math.PI/180; const rotY = parseFloat($('rotY').value) * Math.PI/180; const zoom = parseFloat($('zoom').value);
-    // clear
+    // limpiar canvas
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.save(); ctx.translate(canvas.width/2, canvas.height/2);
-    // axes
+    // ejes
     ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-canvas.width/2,0); ctx.lineTo(canvas.width/2,0); ctx.moveTo(0,-canvas.height/2); ctx.lineTo(0,canvas.height/2); ctx.stroke();
     function proj2(p){ return {x: p[0]*zoom, y: -p[1]*zoom}; }
-    function proj3(p){ // rotate then project
+    function proj3(p){ // rotar y proyectar
       let [x,y,z] = p;
-      // rotate X
+      // rotar alrededor del eje X
       let y2 = y*Math.cos(rotX) - z*Math.sin(rotX);
       let z2 = y*Math.sin(rotX) + z*Math.cos(rotX);
-      // rotate Y
+      // rotar alrededor del eje Y
       let x2 = x*Math.cos(rotY) + z2*Math.sin(rotY);
       let z3 = -x*Math.sin(rotY) + z2*Math.cos(rotY);
-      // simple perspective
+      // perspectiva simple
       const f = 1/(1 + z3*0.2);
       return {x: x2 * f * zoom, y: -y2 * f * zoom};
     }
-    function drawArrow(p, color){ ctx.beginPath(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=2; ctx.moveTo(0,0); ctx.lineTo(p.x,p.y); ctx.stroke(); // head
+    function drawArrow(p, color){ ctx.beginPath(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=2; ctx.moveTo(0,0); ctx.lineTo(p.x,p.y); ctx.stroke(); // cabeza de la flecha
       const ang = Math.atan2(p.y,p.x); const h = 8; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - h*Math.cos(ang-0.3), p.y - h*Math.sin(ang-0.3)); ctx.lineTo(p.x - h*Math.cos(ang+0.3), p.y - h*Math.sin(ang+0.3)); ctx.closePath(); ctx.fill(); }
     if(dim==='2d'){
       if(A.length>=2) drawArrow(proj2([A[0], A[1]]), '#0b5ed7');
@@ -279,7 +279,7 @@
     ctx.restore();
   }
 
-  // Determinante mediante eliminación Gaussian
+  // Determinante mediante eliminación Gaussiana
   function determinant(Ain){
     const A = Ain.map(r=>r.slice()); const n=A.length; if(n===0) return 0; let det = 1; for(let i=0;i<n;i++){
       // pivot
@@ -312,7 +312,7 @@
       for(let k=i;k<n;k++){ let s=0; for(let j=0;j<i;j++) s+=L[i][j]*U[j][k]; U[i][k]=A[i][k]-s; }
       // L
       L[i][i]=1;
-      for(let k=i+1;k<n;k++){ let s=0; for(let j=0;j<i;j++) s+=L[k][j]*U[j][i]; if(Math.abs(U[i][i])<1e-12) throw 'LU failed: pivot cero'; L[k][i]=(A[k][i]-s)/U[i][i]; }
+      for(let k=i+1;k<n;k++){ let s=0; for(let j=0;j<i;j++) s+=L[k][j]*U[j][i]; if(Math.abs(U[i][i])<1e-12) throw 'LU falló: pivote cero'; L[k][i]=(A[k][i]-s)/U[i][i]; }
     }
     return {L,U};
   }
@@ -362,7 +362,7 @@
     }catch(e){ $('exercise-feedback').textContent = 'Error comprobando respuesta: '+e }
   }
 
-  // wire new listeners for visualization and practice will be done in UI wiring
+  // Enlazado: nuevos listeners para visualización y práctica se realizan en el wiring de UI
 
 
   // --- Operaciones vectores ---
@@ -424,18 +424,18 @@
     return {x, iterations: maxIter, tolReached:false};
   }
 
-  // --- UI wiring ---
+  // --- Enlaces de la interfaz (UI wiring) ---
   function $(id){return document.getElementById(id)}
   function showSection(id){ ['sect-vectores','sect-matrices','sect-historial','sect-practice'].forEach(s=>{ const el=$(s); if(el) el.classList.add('hidden'); }); const target=$(id); if(target) target.classList.remove('hidden'); }
 
-  // hooks
+  // ganchos (hooks)
   $('btn-vectores').addEventListener('click',()=>showSection('sect-vectores'));
   $('btn-matrices').addEventListener('click',()=>showSection('sect-matrices'));
   $('btn-historial').addEventListener('click',()=>{ showSection('sect-historial'); fillHist(); });
   // Práctica
   const btnPractice = $('btn-practice'); if(btnPractice) btnPractice.addEventListener('click', ()=> showSection('sect-practice'));
 
-  // Vectores actions
+  // Acciones de vectores
   $('btn-sumar').addEventListener('click',()=>{
     try{
       const A=parseVector($('vecA').value), B=parseVector($('vecB').value);
@@ -490,7 +490,7 @@
     }catch(e){$('out-vectores').textContent='Error: '+e}
   });
 
-  // Matrices actions
+  // Acciones de matrices
   $('btn-m-sum').addEventListener('click',()=>{
     try{
       const A=parseMatrix($('matA').value), B=parseMatrix($('matB').value);
@@ -550,7 +550,7 @@
     }catch(e){$('out-matrices').textContent='Error: '+e}
   });
 
-  // Print steps buttons
+  // Botones para imprimir pasos
   const psv = $('print-steps-vectores'); if(psv) psv.addEventListener('click', ()=> printSteps('vectores'));
   const psm = $('print-steps-matrices'); if(psm) psm.addEventListener('click', ()=> printSteps('matrices'));
 
@@ -575,7 +575,7 @@
   const btnGen = $('btn-gen-exercise'); if(btnGen) btnGen.addEventListener('click', ()=>{ const t=$('practice-type').value; genExercise(t); });
   const btnCheck = $('btn-check-exercise'); if(btnCheck) btnCheck.addEventListener('click', ()=> checkExercise());
 
-  // Historial UI
+  // UI del historial
   function fillHist(){
     const ul = $('list-hist'); ul.innerHTML='';
     const hist = JSON.parse(localStorage.getItem('historial')||'[]');
@@ -602,7 +602,7 @@
     }; r.readAsText(f);
   });
 
-  // Init
+  // Inicialización
   // --- Theme / Configuración ---
   function applyTheme(isDark){
     document.documentElement.classList.toggle('dark', !!isDark);
@@ -624,11 +624,11 @@
     if(stored === 'dark') applyTheme(true);
     else if(stored === 'light') applyTheme(false);
     else {
-      // system or unset
+        // sistema o sin valor
       if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme(true);
       else applyTheme(false);
     }
-    // set radios state if present
+    // establecer el estado de los radios si están presentes
     const rSystem = $('theme-system'), rLight = $('theme-light'), rDark = $('theme-dark');
     if(rSystem && rLight && rDark){
       if(stored === 'dark') rDark.checked = true;
@@ -652,20 +652,20 @@
       }
     });
     $('settings-close').addEventListener('click', ()=> settingsPanel.classList.add('hidden'));
-    // cerrar al clickear fuera del contenido
+    // cerrar al hacer clic fuera del contenido
     settingsPanel.addEventListener('click', (ev)=>{ if(ev.target===settingsPanel) settingsPanel.classList.add('hidden'); });
 
-    // listeners for radio buttons
+    // listeners para los botones de radio
     const themeRadios = document.querySelectorAll('input[name="theme"]');
     themeRadios.forEach(r => r.addEventListener('change', (e)=>{ setThemePreference(e.target.value); }));
   }
 
   initTheme();
   showSection('sect-vectores');
-  // Wire interactive step controls
+  // Enlazar controles interactivos de pasos
   wireStepControls();
 
-  // Decimals control
+  // Control de decimales
   const decInput = $('decimals');
   if(decInput){
     const stored = parseInt(localStorage.getItem('decimals'));
@@ -674,19 +674,19 @@
       const v = parseInt(decInput.value);
       if(Number.isNaN(v) || v<0) return;
       localStorage.setItem('decimals', String(v));
-      // refresh previews and current visible steps/out
+      // actualizar vistas previas y pasos/outputs visibles
       refreshPreviews();
-      // re-render current step displays so formatting updates
+      // volver a renderizar las pantallas de paso actuales para que cambien los formatos
       renderCurrentStep('vectores'); renderCurrentStep('matrices');
     });
   }
 
-  // Input previews
+  // Vistas previas de entrada
   ['vecA','vecB','escalar','matA','matB','vecBmat'].forEach(id=>{ const el=$(id); if(el) el.addEventListener('input', refreshPreviews); });
-  // redibujar visualizador cuando cambian los vectores
+  // redibujar el visualizador cuando cambian los vectores
   const vA = $('vecA'), vB = $('vecB'); if(vA) vA.addEventListener('input', drawVectors); if(vB) vB.addEventListener('input', drawVectors);
-  // initial previews
+  // vistas previas iniciales
   refreshPreviews();
-  // initial draw
+  // dibujo inicial
   try{ drawVectors(); }catch(e){}
 })();
