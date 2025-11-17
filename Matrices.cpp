@@ -284,6 +284,7 @@ void resolverSistemaEcuaciones() {
 }
 
 // Función para resolver el sistema de ecuaciones usando el método de Jacobi
+// Necesita ser implementado
 vector<double> metodoJacobi(const vector<vector<double>>& A, const vector<double>& b, int maxIter, double tol) {
     int n = A.size();
     vector<double> x(n, 0.0); // Solución inicial

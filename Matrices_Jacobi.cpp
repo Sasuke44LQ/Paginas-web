@@ -38,6 +38,7 @@ vector<double> metodoJacobi(const vector<vector<double>>& A, const vector<double
     return xNuevo;
 }
 
+// Implementar funcion principal en el codigo base de matrices
 int main() {
     int n;
     cout << "Ingrese el número de ecuaciones: ";
