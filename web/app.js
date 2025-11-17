@@ -170,26 +170,58 @@
   // --- Theme / Configuración ---
   function applyTheme(isDark){
     document.documentElement.classList.toggle('dark', !!isDark);
-    const cb = $('toggle-dark'); if(cb) cb.checked = !!isDark;
+  }
+
+  function setThemePreference(pref){
+    // pref: 'system' | 'light' | 'dark'
+    localStorage.setItem('theme', pref);
+    if(pref === 'system'){
+      if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme(true);
+      else applyTheme(false);
+    }else{
+      applyTheme(pref === 'dark');
+    }
   }
 
   function initTheme(){
     const stored = localStorage.getItem('theme');
-    if(stored=== 'dark') applyTheme(true);
-    else if(stored=== 'light') applyTheme(false);
-    else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme(true);
+    if(stored === 'dark') applyTheme(true);
+    else if(stored === 'light') applyTheme(false);
+    else {
+      // system or unset
+      if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme(true);
+      else applyTheme(false);
+    }
+    // set radios state if present
+    const rSystem = $('theme-system'), rLight = $('theme-light'), rDark = $('theme-dark');
+    if(rSystem && rLight && rDark){
+      if(stored === 'dark') rDark.checked = true;
+      else if(stored === 'light') rLight.checked = true;
+      else rSystem.checked = true;
+    }
   }
 
   // Abrir/cerrar panel configuración
   const btnSettings = $('btn-settings');
   const settingsPanel = $('settings-panel');
   if(btnSettings && settingsPanel){
-    btnSettings.addEventListener('click', ()=>{ settingsPanel.classList.remove('hidden'); const cb=$('toggle-dark'); if(cb) cb.checked = document.documentElement.classList.contains('dark'); });
+    btnSettings.addEventListener('click', ()=>{
+      settingsPanel.classList.remove('hidden');
+      const stored = localStorage.getItem('theme');
+      const rSystem = $('theme-system'), rLight = $('theme-light'), rDark = $('theme-dark');
+      if(rSystem && rLight && rDark){
+        if(stored === 'dark') rDark.checked = true;
+        else if(stored === 'light') rLight.checked = true;
+        else rSystem.checked = true;
+      }
+    });
     $('settings-close').addEventListener('click', ()=> settingsPanel.classList.add('hidden'));
     // cerrar al clickear fuera del contenido
     settingsPanel.addEventListener('click', (ev)=>{ if(ev.target===settingsPanel) settingsPanel.classList.add('hidden'); });
-    // toggle
-    const tog = $('toggle-dark'); if(tog){ tog.addEventListener('change', (e)=>{ const dark = !!e.target.checked; applyTheme(dark); localStorage.setItem('theme', dark? 'dark':'light'); }); }
+
+    // listeners for radio buttons
+    const themeRadios = document.querySelectorAll('input[name="theme"]');
+    themeRadios.forEach(r => r.addEventListener('change', (e)=>{ setThemePreference(e.target.value); }));
   }
 
   initTheme();

@@ -112,14 +112,24 @@
 
   <script src="app.js"></script>
 
-  <!-- Panel de configuración (modo oscuro, preferencias) -->
+  <!-- Panel de configuración (tema: Sistema / Claro / Oscuro) -->
   <div id="settings-panel" class="modal hidden">
     <div class="modal-content settings-content">
       <button id="settings-close" class="modal-close">Cerrar</button>
       <h3>Configuración</h3>
       <div class="setting-row">
-        <label for="toggle-dark">Modo oscuro</label>
-        <input type="checkbox" id="toggle-dark" />
+        <div>
+          <input type="radio" id="theme-system" name="theme" value="system">
+          <label for="theme-system">Sistema</label>
+        </div>
+        <div>
+          <input type="radio" id="theme-light" name="theme" value="light">
+          <label for="theme-light">Claro</label>
+        </div>
+        <div>
+          <input type="radio" id="theme-dark" name="theme" value="dark">
+          <label for="theme-dark">Oscuro</label>
+        </div>
       </div>
       <p style="font-size:13px;color:#666;margin-top:8px;">La preferencia se guarda en el navegador.</p>
     </div>

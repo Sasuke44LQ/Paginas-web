@@ -38,6 +38,6 @@ Notas técnicas:
 ## Configuración y Modo oscuro
 
 La web incluye ahora un apartado de `Configuración` (icono de engranaje en la cabecera).
-- **Modo oscuro**: activa/desactiva el tema oscuro. La preferencia se guarda en `localStorage` y se aplica automáticamente en futuras visitas.
+- **Tema**: puedes elegir entre `Sistema`, `Claro` u `Oscuro`. La preferencia se guarda en `localStorage` (`system`/`light`/`dark`) y se aplica automáticamente en futuras visitas.
 - Para abrir el panel, haz clic en el botón ⚙️ en la esquina superior derecha; para cerrar, usa el botón "Cerrar" o haz clic fuera del cuadro.
 
