@@ -212,6 +212,159 @@
     return {x, steps};
   }
 
+  // ------ Nuevas utilidades: validación, impresión, visualización, operaciones avanzadas, práctica ------
+
+  function validateVectors(A,B){
+    if(!Array.isArray(A) || !Array.isArray(B)) return {ok:false, msg:'Entrada no es un vector válido', suggestion:'Usa formato: 1,2,3'};
+    if(A.length===0 || B.length===0) return {ok:false, msg:'Uno de los vectores está vacío', suggestion:'Introduce valores separados por comas'};
+    if(A.length !== B.length) return {ok:false, msg:'Dimensiones distintas: vectores de longitudes distintas', suggestion:`A tiene ${A.length} elementos, B tiene ${B.length}. Asegúrate de igualar longitudes.`};
+    return {ok:true};
+  }
+
+  function validateMatricesMul(A,B){
+    if(!Array.isArray(A) || !Array.isArray(B)) return {ok:false, msg:'Entrada no es una matriz válida', suggestion:'Usa formato fila1;fila2 con elementos separados por comas'};
+    if(A.length===0 || B.length===0) return {ok:false, msg:'Una de las matrices está vacía', suggestion:'Introduce matrices con al menos una fila'};
+    const aCols = (A[0]||[]).length; const bRows = B.length;
+    if(aCols !== bRows) return {ok:false, msg:`Dimensiones incompatibles: columnas A (${aCols}) ≠ filas B (${bRows})`, suggestion:'Revisa las dimensiones o transpón una de las matrices'};
+    return {ok:true};
+  }
+
+  function printSteps(section){
+    const st = stepsState[section];
+    if(!st || !st.steps || st.steps.length===0){ alert('No hay pasos para imprimir.'); return; }
+    const w = window.open('','_blank');
+    const title = section==='vectores'? 'Pasos - Vectores' : 'Pasos - Matrices';
+    let html = `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>body{font-family:Segoe UI,Arial;padding:16px} .step{margin-bottom:8px}</style></head><body><h2>${title}</h2>`;
+    if(st.showAll){ html += '<ol>'; st.steps.forEach(s=>{ html += `<li class="step">${String(s)}</li>` }); html += '</ol>'; }
+    else { html += `<div>Resumen: <ol>`; html += `<li>${String(st.steps[Math.max(0,st.idx)])}</li>`; html += `</ol></div>`; }
+    html += `<script>window.onload=function(){window.print();}</script></body></html>`;
+    w.document.open(); w.document.write(html); w.document.close();
+  }
+
+  // Visualizador simple 2D/3D para vectores A y B
+  function drawVectors(){
+    const canvas = $('canvas-vec'); if(!canvas) return; const ctx = canvas.getContext('2d');
+    const A = parseVector($('vecA').value), B = parseVector($('vecB').value);
+    const dim = document.querySelector('input[name="viz-dim"]:checked').value;
+    const rotX = parseFloat($('rotX').value) * Math.PI/180; const rotY = parseFloat($('rotY').value) * Math.PI/180; const zoom = parseFloat($('zoom').value);
+    // clear
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.save(); ctx.translate(canvas.width/2, canvas.height/2);
+    // axes
+    ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-canvas.width/2,0); ctx.lineTo(canvas.width/2,0); ctx.moveTo(0,-canvas.height/2); ctx.lineTo(0,canvas.height/2); ctx.stroke();
+    function proj2(p){ return {x: p[0]*zoom, y: -p[1]*zoom}; }
+    function proj3(p){ // rotate then project
+      let [x,y,z] = p;
+      // rotate X
+      let y2 = y*Math.cos(rotX) - z*Math.sin(rotX);
+      let z2 = y*Math.sin(rotX) + z*Math.cos(rotX);
+      // rotate Y
+      let x2 = x*Math.cos(rotY) + z2*Math.sin(rotY);
+      let z3 = -x*Math.sin(rotY) + z2*Math.cos(rotY);
+      // simple perspective
+      const f = 1/(1 + z3*0.2);
+      return {x: x2 * f * zoom, y: -y2 * f * zoom};
+    }
+    function drawArrow(p, color){ ctx.beginPath(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=2; ctx.moveTo(0,0); ctx.lineTo(p.x,p.y); ctx.stroke(); // head
+      const ang = Math.atan2(p.y,p.x); const h = 8; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - h*Math.cos(ang-0.3), p.y - h*Math.sin(ang-0.3)); ctx.lineTo(p.x - h*Math.cos(ang+0.3), p.y - h*Math.sin(ang+0.3)); ctx.closePath(); ctx.fill(); }
+    if(dim==='2d'){
+      if(A.length>=2) drawArrow(proj2([A[0], A[1]]), '#0b5ed7');
+      if(B.length>=2) drawArrow(proj2([B[0], B[1]]), '#3aa0ff');
+    } else {
+      if(A.length>=3) drawArrow(proj3([A[0],A[1],A[2]]), '#0b5ed7');
+      else if(A.length>=2) drawArrow(proj3([A[0],A[1],0]), '#0b5ed7');
+      if(B.length>=3) drawArrow(proj3([B[0],B[1],B[2]]), '#3aa0ff');
+      else if(B.length>=2) drawArrow(proj3([B[0],B[1],0]), '#3aa0ff');
+    }
+    ctx.restore();
+  }
+
+  // Determinante mediante eliminación Gaussian
+  function determinant(Ain){
+    const A = Ain.map(r=>r.slice()); const n=A.length; if(n===0) return 0; let det = 1; for(let i=0;i<n;i++){
+      // pivot
+      let pivot = i; for(let k=i+1;k<n;k++) if(Math.abs(A[k][i])>Math.abs(A[pivot][i])) pivot=k;
+      if(Math.abs(A[pivot][i])<1e-12) return 0;
+      if(pivot!==i){ [A[i],A[pivot]]=[A[pivot],A[i]]; det *= -1; }
+      det *= A[i][i];
+      for(let k=i+1;k<n;k++){ const c = A[k][i]/A[i][i]; for(let j=i;j<n;j++) A[k][j]-=c*A[i][j]; }
+    }
+    return det;
+  }
+
+  function inverseMatrix(Ain){
+    const n = Ain.length; const A = Ain.map(r=>r.slice()); const I = Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=> i===j?1:0));
+    for(let i=0;i<n;i++){
+      // pivot
+      let pivot=i; for(let k=i+1;k<n;k++) if(Math.abs(A[k][i])>Math.abs(A[pivot][i])) pivot=k;
+      if(Math.abs(A[pivot][i])<1e-12) throw 'Matriz singular, no tiene inversa';
+      if(pivot!==i){ [A[i],A[pivot]]=[A[pivot],A[i]]; [I[i],I[pivot]]=[I[pivot],I[i]]; }
+      const div = A[i][i]; for(let j=0;j<n;j++){ A[i][j]/=div; I[i][j]/=div; }
+      for(let r=0;r<n;r++) if(r!==i){ const mult = A[r][i]; for(let c=0;c<n;c++){ A[r][c]-=mult*A[i][c]; I[r][c]-=mult*I[i][c]; } }
+    }
+    return I;
+  }
+
+  function luDecompose(Ain){
+    const n = Ain.length; const A = Ain.map(r=>r.slice()); const L = Array.from({length:n},()=>Array(n).fill(0)); const U = Array.from({length:n},()=>Array(n).fill(0));
+    for(let i=0;i<n;i++){
+      // U
+      for(let k=i;k<n;k++){ let s=0; for(let j=0;j<i;j++) s+=L[i][j]*U[j][k]; U[i][k]=A[i][k]-s; }
+      // L
+      L[i][i]=1;
+      for(let k=i+1;k<n;k++){ let s=0; for(let j=0;j<i;j++) s+=L[k][j]*U[j][i]; if(Math.abs(U[i][i])<1e-12) throw 'LU failed: pivot cero'; L[k][i]=(A[k][i]-s)/U[i][i]; }
+    }
+    return {L,U};
+  }
+
+  // Modo práctica: generar/chequear ejercicios simples
+  let currentExercise = null;
+  function genExercise(type){
+    const area = $('exercise-area'); clearNode(area); $('exercise-feedback').textContent='';
+    if(type==='vect_sum'){
+      const n = 2 + Math.floor(Math.random()*3);
+      const A = Array.from({length:n},()=>Math.round((Math.random()*10-5))*1);
+      const B = Array.from({length:n},()=>Math.round((Math.random()*10-5))*1);
+      currentExercise = {type, A, B, expected: A.map((v,i)=>v+B[i])};
+      area.innerHTML = `<div>Vector A: ${vecToStr(A)}</div><div>Vector B: ${vecToStr(B)}</div><label>Tu respuesta (formato: a,b,c):</label><input id="exercise-answer" style="width:100%" />`;
+    } else if(type==='mat_mul'){
+      const n = 2 + Math.floor(Math.random()*2);
+      const A = Array.from({length:n},()=>Array.from({length:n},()=>Math.floor(Math.random()*5)));
+      const B = Array.from({length:n},()=>Array.from({length:n},()=>Math.floor(Math.random()*5)));
+      currentExercise = {type, A, B, expected: multiplicarMatrices(A,B)};
+      area.innerHTML = `<div>Matriz A:<pre>${matToStr(A)}</pre></div><div>Matriz B:<pre>${matToStr(B)}</pre></div><label>Tu respuesta (filas separadas por ;):</label><input id="exercise-answer" style="width:100%" />`;
+    } else if(type==='gauss'){
+      const n = 2 + Math.floor(Math.random()*2);
+      const A = Array.from({length:n},()=>Array.from({length:n},()=>Math.floor(Math.random()*6)));
+      const b = Array.from({length:n},()=>Math.floor(Math.random()*6));
+      try{ const x = gaussSolve(A,b); currentExercise={type,A,b,expected:x}; area.innerHTML = `<div>Sistema A x = b</div><div>A:<pre>${matToStr(A)}</pre></div><div>b: ${vecToStr(b)}</div><label>Tu respuesta (a1,a2,..):</label><input id="exercise-answer" style="width:100%" />`; }catch(e){ area.textContent='No se pudo generar sistema estable, inténtalo de nuevo.'; currentExercise=null; }
+    }
+  }
+
+  function checkExercise(){
+    if(!currentExercise){ alert('Genera un ejercicio primero'); return; }
+    const ansStr = $('exercise-answer')? $('exercise-answer').value.trim():''; if(!ansStr){ $('exercise-feedback').textContent='Introduce una respuesta para comprobar.'; return; }
+    try{
+      let ok=false; if(currentExercise.type==='vect_sum' || currentExercise.type==='gauss'){
+        const usr = parseVector(ansStr);
+        const exp = currentExercise.expected.map(x=>Number(fmt(x)));
+        const u = usr.map(x=>Number(fmt(x)));
+        ok = (u.length===exp.length && u.every((v,i)=>Math.abs(v-exp[i])<Math.pow(10,-getDecimals())));
+      } else if(currentExercise.type==='mat_mul'){
+        const usr = parseMatrix(ansStr);
+        const exp = currentExercise.expected;
+        // compare dimensions and values
+        if(usr.length!==exp.length) ok=false; else{
+          ok = usr.every((r,i)=> r.length===exp[i].length && r.every((v,j)=> Math.abs(Number(fmt(v))-Number(fmt(exp[i][j])))<Math.pow(10,-getDecimals())));
+        }
+      }
+      $('exercise-feedback').textContent = ok? 'Correcto ✅' : 'Incorrecto ❌ — Revisa los pasos y vuelve a intentar.';
+    }catch(e){ $('exercise-feedback').textContent = 'Error comprobando respuesta: '+e }
+  }
+
+  // wire new listeners for visualization and practice will be done in UI wiring
+
+
   // --- Operaciones vectores ---
   function sumarVectores(a,b){ if(a.length!==b.length) throw 'Dimensiones distintas'; return a.map((v,i)=>v+b[i]); }
   function restarVectores(a,b){ if(a.length!==b.length) throw 'Dimensiones distintas'; return a.map((v,i)=>v-b[i]); }
@@ -273,17 +426,21 @@
 
   // --- UI wiring ---
   function $(id){return document.getElementById(id)}
-  function showSection(id){ ['sect-vectores','sect-matrices','sect-historial'].forEach(s=>$(s).classList.add('hidden')); $(id).classList.remove('hidden'); }
+  function showSection(id){ ['sect-vectores','sect-matrices','sect-historial','sect-practice'].forEach(s=>{ const el=$(s); if(el) el.classList.add('hidden'); }); const target=$(id); if(target) target.classList.remove('hidden'); }
 
   // hooks
   $('btn-vectores').addEventListener('click',()=>showSection('sect-vectores'));
   $('btn-matrices').addEventListener('click',()=>showSection('sect-matrices'));
   $('btn-historial').addEventListener('click',()=>{ showSection('sect-historial'); fillHist(); });
+  // Práctica
+  const btnPractice = $('btn-practice'); if(btnPractice) btnPractice.addEventListener('click', ()=> showSection('sect-practice'));
 
   // Vectores actions
   $('btn-sumar').addEventListener('click',()=>{
     try{
       const A=parseVector($('vecA').value), B=parseVector($('vecB').value);
+      const vOk = validateVectors(A,B);
+      if(!vOk.ok){ const out=$('out-vectores'); clearNode(out); const err=document.createElement('div'); err.className='msg-error'; err.textContent = vOk.msg + (vOk.suggestion?(' — '+vOk.suggestion):''); out.appendChild(err); return; }
       const r=sumarVectores(A,B);
       renderVector($('out-vectores'), r);
       logOperacion('suma_vectores',{A,B},r);
@@ -294,6 +451,8 @@
   $('btn-restar').addEventListener('click',()=>{
     try{
       const A=parseVector($('vecA').value), B=parseVector($('vecB').value);
+      const vOk = validateVectors(A,B);
+      if(!vOk.ok){ const out=$('out-vectores'); clearNode(out); const err=document.createElement('div'); err.className='msg-error'; err.textContent = vOk.msg + (vOk.suggestion?(' — '+vOk.suggestion):''); out.appendChild(err); return; }
       const r=restarVectores(A,B);
       renderVector($('out-vectores'), r);
       logOperacion('resta_vectores',{A,B},r);
@@ -303,9 +462,11 @@
   $('btn-punto').addEventListener('click',()=>{
     try{
       const A=parseVector($('vecA').value), B=parseVector($('vecB').value);
+      const vOk = validateVectors(A,B);
+      if(!vOk.ok){ const out=$('out-vectores'); clearNode(out); const err=document.createElement('div'); err.className='msg-error'; err.textContent = vOk.msg + (vOk.suggestion?(' — '+vOk.suggestion):''); out.appendChild(err); return; }
       const r=productoPunto(A,B);
       const out = $('out-vectores'); clearNode(out);
-      const txt = document.createElement('div'); txt.textContent = 'A · B = '+r; out.appendChild(txt);
+      const txt = document.createElement('div'); txt.textContent = 'A · B = '+fmt(r); out.appendChild(txt);
       logOperacion('producto_punto',{A,B},r);
       const stepsContainer = $('steps-vectores'); if($('show-steps-vectores') && $('show-steps-vectores').checked){ enterStepsMode('vectores', steps_dot(A,B)); } else if(stepsContainer) clearNode(stepsContainer);
     }catch(e){$('out-vectores').textContent='Error: '+e}
@@ -333,6 +494,7 @@
   $('btn-m-sum').addEventListener('click',()=>{
     try{
       const A=parseMatrix($('matA').value), B=parseMatrix($('matB').value);
+      if(!A.length || !B.length){ const out=$('out-matrices'); clearNode(out); const err=document.createElement('div'); err.className='msg-error'; err.textContent='Una de las matrices está vacía'; out.appendChild(err); return; }
       const r=sumarMatrices(A,B);
       renderMatrix($('out-matrices'), r);
       logOperacion('suma_matrices',{A,B},r);
@@ -343,6 +505,8 @@
   $('btn-m-mul').addEventListener('click',()=>{
     try{
       const A=parseMatrix($('matA').value), B=parseMatrix($('matB').value);
+      const vOk = validateMatricesMul(A,B);
+      if(!vOk.ok){ const out=$('out-matrices'); clearNode(out); const err=document.createElement('div'); err.className='msg-error'; err.textContent = vOk.msg + (vOk.suggestion?(' — '+vOk.suggestion):''); out.appendChild(err); return; }
       const r=multiplicarMatrices(A,B);
       renderMatrix($('out-matrices'), r);
       logOperacion('mul_matrices',{A,B},r);
@@ -385,6 +549,31 @@
       const stepsContainer = $('steps-matrices'); if($('show-steps-matrices') && $('show-steps-matrices').checked){ const st = ['Algoritmo Jacobi iterativo. Parámetros: tol='+opts.tol+' maxIter='+opts.maxIter, 'Resultado final: '+vecToStr(res.x), 'Iteraciones: '+res.iterations]; enterStepsMode('matrices', st); } else if(stepsContainer) clearNode(stepsContainer);
     }catch(e){$('out-matrices').textContent='Error: '+e}
   });
+
+  // Print steps buttons
+  const psv = $('print-steps-vectores'); if(psv) psv.addEventListener('click', ()=> printSteps('vectores'));
+  const psm = $('print-steps-matrices'); if(psm) psm.addEventListener('click', ()=> printSteps('matrices'));
+
+  // Operaciones avanzadas: det / inv / lu
+  const btnDet = $('btn-det'); if(btnDet) btnDet.addEventListener('click', ()=>{
+    try{ const A=parseMatrix($('matA').value); const out=$('out-matrices'); clearNode(out); const det = determinant(A); const div=document.createElement('div'); div.textContent='Determinante = '+fmt(det); out.appendChild(div); logOperacion('determinante',{A},det); }catch(e){const out=$('out-matrices'); clearNode(out); const err=document.createElement('div'); err.className='msg-error'; err.textContent='Error: '+e; out.appendChild(err);} });
+
+  const btnInv = $('btn-inv'); if(btnInv) btnInv.addEventListener('click', ()=>{
+    try{ const A=parseMatrix($('matA').value); const inv = inverseMatrix(A); const out=$('out-matrices'); clearNode(out); renderMatrix(out, inv); logOperacion('inversa',{A},inv); if($('show-steps-matrices') && $('show-steps-matrices').checked){ enterStepsMode('matrices', ['Inversa calculada mediante Gauss-Jordan.']); } }catch(e){ const out=$('out-matrices'); clearNode(out); const err=document.createElement('div'); err.className='msg-error'; err.textContent = 'Error: '+e; out.appendChild(err); } });
+
+  const btnLU = $('btn-lu'); if(btnLU) btnLU.addEventListener('click', ()=>{
+    try{ const A=parseMatrix($('matA').value); const res = luDecompose(A); const out=$('out-matrices'); clearNode(out); const h=document.createElement('div'); h.innerHTML='<strong>L:</strong>'; out.appendChild(h); renderMatrix(out, res.L); const h2=document.createElement('div'); h2.innerHTML='<strong>U:</strong>'; out.appendChild(h2); renderMatrix(out, res.U); logOperacion('lu',{A},res); if($('show-steps-matrices') && $('show-steps-matrices').checked){ enterStepsMode('matrices', ['Descomposición LU (Doolittle) realizada.']); } }catch(e){ const out=$('out-matrices'); clearNode(out); const err=document.createElement('div'); err.className='msg-error'; err.textContent='Error: '+e; out.appendChild(err);} });
+
+  // Visualizador: dibujar y re-dibujar al cambiar controles
+  const btnDraw = $('btn-draw-viz'); if(btnDraw) btnDraw.addEventListener('click', drawVectors);
+  const rotX = $('rotX'), rotY = $('rotY'), zoom = $('zoom');
+  if(rotX) rotX.addEventListener('input', drawVectors);
+  if(rotY) rotY.addEventListener('input', drawVectors);
+  if(zoom) zoom.addEventListener('input', drawVectors);
+
+  // Práctica: generar y comprobar
+  const btnGen = $('btn-gen-exercise'); if(btnGen) btnGen.addEventListener('click', ()=>{ const t=$('practice-type').value; genExercise(t); });
+  const btnCheck = $('btn-check-exercise'); if(btnCheck) btnCheck.addEventListener('click', ()=> checkExercise());
 
   // Historial UI
   function fillHist(){
@@ -494,6 +683,10 @@
 
   // Input previews
   ['vecA','vecB','escalar','matA','matB','vecBmat'].forEach(id=>{ const el=$(id); if(el) el.addEventListener('input', refreshPreviews); });
+  // redibujar visualizador cuando cambian los vectores
+  const vA = $('vecA'), vB = $('vecB'); if(vA) vA.addEventListener('input', drawVectors); if(vB) vB.addEventListener('input', drawVectors);
   // initial previews
   refreshPreviews();
+  // initial draw
+  try{ drawVectors(); }catch(e){}
 })();
