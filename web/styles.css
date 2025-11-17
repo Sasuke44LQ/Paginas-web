@@ -1,13 +1,13 @@
 :root{
 	--bg: #f3f4f6;
-	/* Modal (ventana modal) */
+	--panel-bg: #ffffff;
 	--text: #111111;
 	--muted: #666666;
-	/* Ajustes: panel de configuración */
-	.settings-content .setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:8px}
+	--header-bg: #0b5ed7;
+	--accent: #0b5ed7;
 	--card-shadow: rgba(0,0,0,0.08);
 }
-	.dark{
+
 *{box-sizing:border-box;font-family:Segoe UI, Roboto, Arial, sans-serif}
 body{margin:0;background:var(--bg);color:var(--text)}
 header{background:var(--header-bg);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
@@ -17,37 +17,29 @@ nav button:hover{background:#ffffff33}
 main{padding:16px}
 .panel{background:var(--panel-bg);padding:16px;border-radius:8px;box-shadow:0 1px 3px var(--card-shadow);max-width:960px;margin:12px auto}
 .hidden{display:none}
-	/* Tema oscuro: sobrescrituras */
-
-	/* Visualización de vectores y matrices */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:12px}
 .grid label{display:block;font-size:13px;margin-bottom:6px}
 .grid input{width:100%;padding:8px;border-radius:6px;border:1px solid #ddd}
-	.small-btn{padding:6px 8px;border-radius:6px;border:1px solid #bbb;background:var(--panel-bg);cursor:pointer}
+.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .buttons button{padding:8px 12px;border-radius:6px;border:1px solid #0b5ed7;background:#0b5ed7;color:white;cursor:pointer}
+#output{ }
 .output{background:#f8fafc;padding:12px;border-radius:6px;border:1px dashed #e5e7eb;min-height:40px}
-	/* Botones pequeños para controles de pasos */
-
-	/* Animaciones */
+footer{padding:8px 16px;text-align:center;color:var(--muted)}
 #list-hist{list-style:none;padding:0;margin:8px 0}
 #list-hist{list-style:none;padding:0;margin:8px 0}
-	.visible{animation:fadeInUp .32s ease both}
+#list-hist li{padding:8px;border-bottom:1px solid #eee}
+.hist-table-wrap{overflow:auto}
 #hist-table{width:100%;border-collapse:collapse;margin-top:8px}
 #hist-table th, #hist-table td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:13px}
 #hist-table thead th{background:#fafafa}
 .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#0b5ed7;font-size:12px}
+.vis-label{margin-left:8px;color:#444;font-size:13px}
+
+/* Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center}
-
-	/* Clases helper para activar animaciones desde JS */
-
-	.vector-chip.added{animation:chipPop .36s cubic-bezier(.2,.9,.3,1) both}
-	.step-item{animation:stepIn .28s ease both}
-	.hist-item{animation:itemIn .28s ease both}
-
-	/* Micro-animación al pasar por encima de celdas de matriz */
-	.matrix-table td:hover{transform:translateY(-2px);transition:transform .18s ease, background .18s ease}
-
-	/* Entrada de la página */
-	body{animation:pageIn .28s ease both}
+.modal.hidden{display:none}
+.modal-content{background:var(--panel-bg);padding:16px;border-radius:8px;max-width:800px;width:90%;max-height:80vh;overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,0.2)}
+.modal-close{float:right;background:var(--bg);border:1px solid #ddd;padding:6px 10px;border-radius:6px;cursor:pointer}
 .modal pre{background:#0f1724;color:#e6eef8;padding:12px;border-radius:6px;overflow:auto}
 .hist-ops{display:flex;gap:8px;align-items:center;margin-bottom:8px}
 .hist-ops button{padding:6px 10px;border-radius:6px;border:1px solid #666;background:#eee;cursor:pointer}
@@ -106,45 +98,4 @@ main{padding:16px}
 .small-btn{padding:6px 8px;border-radius:6px;border:1px solid #bbb;background:var(--panel-bg);cursor:pointer}
 .small-btn:hover{background:#f3f6ff}
 .dark .small-btn{background:var(--panel-bg)}
-
-/* Animations */
-@keyframes fadeInUp {
-	from{opacity:0;transform:translateY(10px)}
-	to{opacity:1;transform:translateY(0)}
-}
-
-@keyframes chipPop {
-	0%{transform:scale(.92);opacity:0}
-	60%{transform:scale(1.06);opacity:1}
-	100%{transform:scale(1);opacity:1}
-}
-
-@keyframes stepIn {
-	from{opacity:0;transform:translateX(-8px)}
-	to{opacity:1;transform:translateX(0)}
-}
-
-@keyframes pageIn {
-	from{opacity:0;transform:translateY(6px)}
-	to{opacity:1;transform:translateY(0)}
-}
-
-@keyframes itemIn {
-	from{opacity:0;transform:translateY(6px)}
-	to{opacity:1;transform:translateY(0)}
-}
-
-/* Helper classes to trigger animations from JS */
-.visible{animation:fadeInUp .32s ease both}
-.vector-chip.added{animation:chipPop .36s cubic-bezier(.2,.9,.3,1) both}
-.step-item{animation:stepIn .28s ease both}
-.hist-item{animation:itemIn .28s ease both}
-
-/* Matrix cell hover micro-animation */
-.matrix-table td:hover{transform:translateY(-2px);transition:transform .18s ease, background .18s ease}
-
-/* Page entrance */
-body{animation:pageIn .28s ease both}
-
-    }
 
