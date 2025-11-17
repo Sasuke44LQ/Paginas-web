@@ -41,3 +41,13 @@ La web incluye ahora un apartado de `Configuración` (icono de engranaje en la c
 - **Tema**: puedes elegir entre `Sistema`, `Claro` u `Oscuro`. La preferencia se guarda en `localStorage` (`system`/`light`/`dark`) y se aplica automáticamente en futuras visitas.
 - Para abrir el panel, haz clic en el botón ⚙️ en la esquina superior derecha; para cerrar, usa el botón "Cerrar" o haz clic fuera del cuadro.
 
+## Pasos detallados de operaciones
+
+Se agregó un control `Mostrar pasos` en las secciones **Vectores** y **Matrices**. Al activarlo, la interfaz mostrará pasos intermedios que explican cómo se llega al resultado (por ejemplo, sumas por componente, multiplicaciones parciales en producto matricial, operaciones de eliminación en Gauss, etc.).
+
+Qué mostrar actualmente:
+- Vectores: suma, resta, multiplicación por escalar, producto punto y norma (pasos por componente).
+- Matrices: suma, multiplicación, transposición y resolución por Gauss (pasos de pivoteo y eliminación). Jacobi muestra un resumen de iteraciones y resultado.
+
+Esto está pensado para ayudar a estudiantes a entender cada operación; si quieres más detalle (por ejemplo, mostrar cada fila en cada paso de Gauss o guardar un histórico de pasos), puedo ampliarlo.
+

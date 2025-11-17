@@ -12,6 +12,7 @@
     <nav>
       <button id="btn-vectores">Vectores</button>
       <button id="btn-matrices">Matrices</button>
+        <button id="btn-practice">Práctica</button>
       <button id="btn-historial">Historial</button>
       <button id="btn-settings" title="Configuración">⚙️</button>
     </nav>
@@ -24,14 +25,17 @@
         <div>
           <label>Vector A (coma-sep):</label>
           <input id="vecA" placeholder="1,2,3" />
+          <div id="preview-vecA" class="input-preview"></div>
         </div>
         <div>
           <label>Vector B (coma-sep):</label>
           <input id="vecB" placeholder="4,5,6" />
+          <div id="preview-vecB" class="input-preview"></div>
         </div>
         <div>
           <label>Escalar:</label>
           <input id="escalar" placeholder="2" />
+          <div id="preview-escalar" class="input-preview"></div>
         </div>
       </div>
 
@@ -43,7 +47,31 @@
         <button id="btn-norma">Norma de A</button>
       </div>
 
+      <div class="result-label">Resultado:</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <label class="vis-label" style="margin:0"><input type="checkbox" id="show-steps-vectores"> Mostrar pasos</label>
+        <div id="step-controls-vectores" style="display:none;align-items:center;gap:6px">
+          <button id="prev-step-vectores" class="small-btn">Anterior</button>
+          <span id="step-counter-vectores" style="font-size:13px;color:var(--muted)"></span>
+          <button id="next-step-vectores" class="small-btn">Siguiente</button>
+          <button id="show-all-steps-vectores" class="small-btn">Mostrar todo</button>
+          <button id="print-steps-vectores" class="small-btn">Imprimir pasos</button>
+        </div>
+      </div>
       <div class="output" id="out-vectores"></div>
+      <div class="steps" id="steps-vectores" aria-live="polite"></div>
+      <div class="vector-visual" style="margin-top:12px">
+        <h4>Visualizador de vectores</h4>
+        <canvas id="canvas-vec" width="540" height="260" style="border:1px solid #e6eef8;border-radius:6px;background:var(--panel-bg)"></canvas>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <label><input type="radio" name="viz-dim" value="2d" checked> 2D</label>
+          <label><input type="radio" name="viz-dim" value="3d"> 3D (proyección)</label>
+          <label style="margin-left:8px">Rot X: <input type="range" id="rotX" min="-180" max="180" value="0"></label>
+          <label>Rot Y: <input type="range" id="rotY" min="-180" max="180" value="0"></label>
+          <label>Zoom: <input type="range" id="zoom" min="0.2" max="3" step="0.1" value="1"></label>
+          <button id="btn-draw-viz" class="small-btn">Dibujar</button>
+        </div>
+      </div>
     </section>
 
     <section id="sect-matrices" class="panel hidden">
@@ -52,26 +80,55 @@
         <div>
           <label>Matriz A (filas separadas por ; y elementos por ,):</label>
           <input id="matA" placeholder="1,2;3,4" />
+          <div id="preview-matA" class="input-preview"></div>
         </div>
         <div>
           <label>Matriz B (igual formato):</label>
           <input id="matB" placeholder="5,6;7,8" />
+          <div id="preview-matB" class="input-preview"></div>
         </div>
         <div>
           <label>Vector b (para resolver Ax=b):</label>
           <input id="vecBmat" placeholder="9,10" />
+          <div id="preview-vecBmat" class="input-preview"></div>
         </div>
       </div>
 
       <div class="buttons">
         <button id="btn-m-sum">Sumar</button>
         <button id="btn-m-mul">Multiplicar</button>
+        <button id="btn-det" title="Determinante">Determinante</button>
+        <button id="btn-inv" title="Inversa">Inversa (si existe)</button>
+        <button id="btn-lu" title="LU">LU</button>
         <button id="btn-transp">Transponer A</button>
         <button id="btn-gauss">Resolver (Gauss) A x = b</button>
         <button id="btn-jacobi">Resolver (Jacobi) A x = b</button>
       </div>
 
+      <div class="result-label">Resultado:</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <label class="vis-label" style="margin:0"><input type="checkbox" id="show-steps-matrices"> Mostrar pasos</label>
+        <div id="step-controls-matrices" style="display:none;align-items:center;gap:6px">
+          <button id="prev-step-matrices" class="small-btn">Anterior</button>
+          <span id="step-counter-matrices" style="font-size:13px;color:var(--muted)"></span>
+          <button id="next-step-matrices" class="small-btn">Siguiente</button>
+          <button id="show-all-steps-matrices" class="small-btn">Mostrar todo</button>
+          <button id="print-steps-matrices" class="small-btn">Imprimir pasos</button>
+        </div>
+      </div>
       <div class="output" id="out-matrices"></div>
+      <div class="steps" id="steps-matrices" aria-live="polite"></div>
+    </section>
+
+    <section id="sect-practice" class="panel hidden">
+      <h2>Modo Práctica / Examen</h2>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <label>Tipo: <select id="practice-type"><option value="vect_sum">Suma vectores</option><option value="mat_mul">Multiplicación matrices</option><option value="gauss">Resolver Ax=b (Gauss)</option></select></label>
+        <button id="btn-gen-exercise" class="small-btn">Generar ejercicio</button>
+        <button id="btn-check-exercise" class="small-btn">Comprobar respuesta</button>
+      </div>
+      <div id="exercise-area" style="margin-top:8px"></div>
+      <div id="exercise-feedback" style="margin-top:8px;color:var(--muted)"></div>
     </section>
 
     <section id="sect-historial" class="panel hidden">
@@ -110,8 +167,6 @@
     <small>Interfaz cliente. El historial se guarda en `localStorage`. Puedes exportar/importar JSONL para integrarlo con `historial.log`.</small>
   </footer>
 
-  <script src="app.js"></script>
-
   <!-- Panel de configuración (tema: Sistema / Claro / Oscuro) -->
   <div id="settings-panel" class="modal hidden">
     <div class="modal-content settings-content">
@@ -121,6 +176,8 @@
         <div>
           <input type="radio" id="theme-system" name="theme" value="system">
           <label for="theme-system">Sistema</label>
+    <!-- Control global de decimales en la configuración -->
+    <div style="position:fixed;right:16px;bottom:16px;z-index:50;display:none" id="decimal-toast"></div>
         </div>
         <div>
           <input type="radio" id="theme-light" name="theme" value="light">
@@ -131,8 +188,14 @@
           <label for="theme-dark">Oscuro</label>
         </div>
       </div>
+        <div class="setting-row" style="margin-top:8px;align-items:center;gap:8px">
+          <label for="decimals" style="font-weight:600;">Decimales</label>
+          <input type="number" id="decimals" min="0" max="12" step="1" style="width:72px;padding:6px;border-radius:6px;border:1px solid #ddd" />
+          <small style="color:#666;font-size:13px">Controla la cantidad de decimales mostrados en los resultados.</small>
+        </div>
       <p style="font-size:13px;color:#666;margin-top:8px;">La preferencia se guarda en el navegador.</p>
     </div>
   </div>
+  <script src="app.js"></script>
 </body>
 </html>
