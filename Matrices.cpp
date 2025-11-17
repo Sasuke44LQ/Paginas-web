@@ -6,7 +6,22 @@
 
 using namespace std;
 
-// Función para mostrar una matriz
+/**
+ * Mostrar una matriz en pantalla.
+ *
+ * Parámetros:
+ *  - matriz: referencia constante a una matriz (vector de vectores de double).
+ *
+ * Comportamiento:
+ *  - Imprime cada fila con formato fijo (4 decimales) para facilitar lectura.
+ *  - No modifica la matriz original.
+ *
+ * Complejidad:
+ *  - O(m*n) donde m y n son filas y columnas de la matriz.
+ *
+ * Ejemplo:
+ *  - mostrarMatriz({{1,2},{3,4}}) imprime una matriz 2x2 formateada.
+ */
 void mostrarMatriz(const vector<vector<double>>& matriz) {
     for (const auto& fila : matriz) {
         for (double elemento : fila) {
@@ -16,7 +31,21 @@ void mostrarMatriz(const vector<vector<double>>& matriz) {
     }
 }
 
-// Sumar dos matrices
+/**
+ * Sumar dos matrices A + B elemento a elemento.
+ *
+ * Parámetros:
+ *  - A, B: matrices con las mismas dimensiones (filas x columnas).
+ *
+ * Retorno:
+ *  - Nueva matriz resultado con la suma elemento a elemento.
+ *
+ * Errores:
+ *  - El comportamiento no está definido si las dimensiones no coinciden (se asume entrada válida).
+ *
+ * Complejidad:
+ *  - O(m*n) para matrices m x n.
+ */
 vector<vector<double>> sumarMatrices(const vector<vector<double>>& A, const vector<vector<double>>& B) {
     int filas = A.size();
     int columnas = A[0].size();
@@ -30,7 +59,11 @@ vector<vector<double>> sumarMatrices(const vector<vector<double>>& A, const vect
     return resultado;
 }
 
-// Restar dos matrices
+/**
+ * Restar dos matrices A - B elemento a elemento.
+ *
+ * Véase `sumarMatrices` para consideraciones sobre dimensiones y complejidad.
+ */
 vector<vector<double>> restarMatrices(const vector<vector<double>>& A, const vector<vector<double>>& B) {
     int filas = A.size();
     int columnas = A[0].size();
@@ -44,7 +77,22 @@ vector<vector<double>> restarMatrices(const vector<vector<double>>& A, const vec
     return resultado;
 }
 
-// Multiplicar dos matrices
+/**
+ * Producto matricial C = A * B.
+ *
+ * Parámetros:
+ *  - A: matriz de tamaño m x p.
+ *  - B: matriz de tamaño p x n.
+ *
+ * Retorno:
+ *  - Matriz resultado de tamaño m x n.
+ *
+ * Precondición:
+ *  - column(A) == row(B) (sin comprobación explícita en el código se asume válida).
+ *
+ * Complejidad:
+ *  - O(m * p * n).
+ */
 vector<vector<double>> multiplicarMatrices(const vector<vector<double>>& A, const vector<vector<double>>& B) {
     int filasA = A.size();
     int columnasA = A[0].size();
@@ -61,7 +109,18 @@ vector<vector<double>> multiplicarMatrices(const vector<vector<double>>& A, cons
     return resultado;
 }
 
-// Transponer una matriz
+/**
+ * Transponer una matriz.
+ *
+ * Parámetros:
+ *  - matriz: matriz de tamaño m x n.
+ *
+ * Retorno:
+ *  - Matriz transpuesta de tamaño n x m.
+ *
+ * Complejidad:
+ *  - O(m*n).
+ */
 vector<vector<double>> transponerMatriz(const vector<vector<double>>& matriz) {
     int filas = matriz.size();
     int columnas = matriz[0].size();
@@ -75,7 +134,25 @@ vector<vector<double>> transponerMatriz(const vector<vector<double>>& matriz) {
     return transpuesta;
 }
 
-// Método de Cramer para resolver sistemas de ecuaciones
+/**
+ * Método de Cramer para resolver sistemas lineales Ax = b.
+ *
+ * Parámetros:
+ *  - A: matriz cuadrada n x n de coeficientes.
+ *  - b: vector de términos independientes de tamaño n.
+ *
+ * Retorno:
+ *  - Vector x con las soluciones (si existe solución única).
+ *
+ * Errores:
+ *  - Lanza `runtime_error` si el determinante de A es 0 (no hay solución única).
+ *
+ * Complejidad:
+ *  - O(n^4) en esta implementación aproximada (calcula determinante n+1 veces usando eliminación).
+ *
+ * Nota:
+ *  - Este método es pedagógico; para n grande es ineficiente comparado con métodos de factorización.
+ */
 vector<double> metodoCramer(const vector<vector<double>>& A, const vector<double>& b) {
     int n = A.size();
     double detA = 1.0; // Determinante de A
@@ -122,7 +199,22 @@ vector<double> metodoCramer(const vector<vector<double>>& A, const vector<double
     return x;
 }
 
-// Método de Gauss para resolver sistemas de ecuaciones
+/**
+ * Eliminación de Gauss (sin pivoteo) para resolver Ax = b.
+ *
+ * Parámetros:
+ *  - A: matriz cuadrada n x n (se copia internamente).
+ *  - b: vector de tamaño n (se modifica internamente durante la eliminación).
+ *
+ * Retorno:
+ *  - Vector x solución.
+ *
+ * Advertencias:
+ *  - No usa pivoteo; puede fallar o ser inestable si hay pivotes pequeños o ceros en la diagonal.
+ *
+ * Complejidad:
+ *  - O(n^3).
+ */
 vector<double> metodoGauss(vector<vector<double>> A, vector<double> b) {
     int n = A.size();
     // Eliminación hacia adelante
@@ -149,7 +241,18 @@ vector<double> metodoGauss(vector<vector<double>> A, vector<double> b) {
     return x;
 }
 
-// Método de Gauss-Jordan para resolver sistemas de ecuaciones
+/**
+ * Método de Gauss-Jordan para resolver sistemas lineales a partir de la matriz aumentada [A|b].
+ *
+ * Parámetros:
+ *  - Augmented: matriz aumentada de tamaño n x (n+1).
+ *
+ * Retorno:
+ *  - Vector x solución extraído de la última columna una vez la matriz está reducida por filas.
+ *
+ * Complejidad:
+ *  - O(n^3).
+ */
 vector<double> metodoGaussJordan(vector<vector<double>> Augmented) {
     int n = Augmented.size();
     
@@ -181,7 +284,22 @@ vector<double> metodoGaussJordan(vector<vector<double>> Augmented) {
     return x;
 }
 
-// Método de Pivoteo para mejorar la estabilidad numérica
+/**
+ * Eliminación hacia adelante con pivoteo parcial (intercambio de filas) y sustitución hacia atrás.
+ *
+ * Parámetros:
+ *  - A: matriz cuadrada n x n.
+ *  - b: vector de tamaño n.
+ *
+ * Retorno:
+ *  - Vector x solución.
+ *
+ * Ventaja:
+ *  - Más estable numéricamente que la eliminación sin pivoteo.
+ *
+ * Complejidad:
+ *  - O(n^3).
+ */
 vector<double> metodoPivoteo(vector<vector<double>> A, vector<double> b) {
     int n = A.size();
 
@@ -224,6 +342,16 @@ vector<double> metodoPivoteo(vector<vector<double>> A, vector<double> b) {
     return x;
 }
 
+/**
+ * Interfaz de consola para resolver un sistema Ax = b mediante varios métodos.
+ *
+ * Comportamiento:
+ *  - Solicita al usuario el tamaño n, la matriz A y el vector b.
+ *  - Ejecuta y muestra soluciones con: Cramer, Gauss, Gauss-Jordan y Pivoteo.
+ *
+ * Nota:
+ *  - Imprime resultados en stdout y maneja la excepción cuando Cramer no aplica.
+ */
 void resolverSistemaEcuaciones() {
     int n;
     
@@ -283,8 +411,10 @@ void resolverSistemaEcuaciones() {
 
 }
 
-// Función para resolver el sistema de ecuaciones usando el método de Jacobi
-// Necesita ser implementado
+// Método iterativo de Jacobi
+// - Apropiado para sistemas donde la matriz es diagonalmente dominante
+// - Recibe: A (matriz de coeficientes), b (términos independientes), maxIter (máx iteraciones), tol (tolerancia)
+// - Devuelve el vector solución aproximada
 vector<double> metodoJacobi(const vector<vector<double>>& A, const vector<double>& b, int maxIter, double tol) {
     int n = A.size();
     vector<double> x(n, 0.0); // Solución inicial
