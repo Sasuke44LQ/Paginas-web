@@ -167,5 +167,31 @@
   });
 
   // Init
+  // --- Theme / Configuración ---
+  function applyTheme(isDark){
+    document.documentElement.classList.toggle('dark', !!isDark);
+    const cb = $('toggle-dark'); if(cb) cb.checked = !!isDark;
+  }
+
+  function initTheme(){
+    const stored = localStorage.getItem('theme');
+    if(stored=== 'dark') applyTheme(true);
+    else if(stored=== 'light') applyTheme(false);
+    else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme(true);
+  }
+
+  // Abrir/cerrar panel configuración
+  const btnSettings = $('btn-settings');
+  const settingsPanel = $('settings-panel');
+  if(btnSettings && settingsPanel){
+    btnSettings.addEventListener('click', ()=>{ settingsPanel.classList.remove('hidden'); const cb=$('toggle-dark'); if(cb) cb.checked = document.documentElement.classList.contains('dark'); });
+    $('settings-close').addEventListener('click', ()=> settingsPanel.classList.add('hidden'));
+    // cerrar al clickear fuera del contenido
+    settingsPanel.addEventListener('click', (ev)=>{ if(ev.target===settingsPanel) settingsPanel.classList.add('hidden'); });
+    // toggle
+    const tog = $('toggle-dark'); if(tog){ tog.addEventListener('change', (e)=>{ const dark = !!e.target.checked; applyTheme(dark); localStorage.setItem('theme', dark? 'dark':'light'); }); }
+  }
+
+  initTheme();
   showSection('sect-vectores');
 })();

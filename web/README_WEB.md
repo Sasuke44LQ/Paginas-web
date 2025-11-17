@@ -34,6 +34,10 @@ Notas técnicas:
 - La implementación prioriza simplicidad y compatibilidad (cliente puro, sin servidor).
 - Si quieres persistencia central en disco o integración directa con los ejecutables C++, necesitarás un servidor (por ejemplo Node.js o un pequeño servicio Python) que reciba POST y escriba en `historial.log`. Puedo añadirlo si lo deseas.
 
-Si quieres, implemento:
-- Parseo más rico en la UI (mostrar campos separados) o
-- Un pequeño servidor Node.js para almacenar el historial en `historial.log` del repo.
+
+## Configuración y Modo oscuro
+
+La web incluye ahora un apartado de `Configuración` (icono de engranaje en la cabecera).
+- **Modo oscuro**: activa/desactiva el tema oscuro. La preferencia se guarda en `localStorage` y se aplica automáticamente en futuras visitas.
+- Para abrir el panel, haz clic en el botón ⚙️ en la esquina superior derecha; para cerrar, usa el botón "Cerrar" o haz clic fuera del cuadro.
+

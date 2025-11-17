@@ -13,6 +13,7 @@
       <button id="btn-vectores">Vectores</button>
       <button id="btn-matrices">Matrices</button>
       <button id="btn-historial">Historial</button>
+      <button id="btn-settings" title="Configuración">⚙️</button>
     </nav>
   </header>
 
@@ -110,5 +111,18 @@
   </footer>
 
   <script src="app.js"></script>
+
+  <!-- Panel de configuración (modo oscuro, preferencias) -->
+  <div id="settings-panel" class="modal hidden">
+    <div class="modal-content settings-content">
+      <button id="settings-close" class="modal-close">Cerrar</button>
+      <h3>Configuración</h3>
+      <div class="setting-row">
+        <label for="toggle-dark">Modo oscuro</label>
+        <input type="checkbox" id="toggle-dark" />
+      </div>
+      <p style="font-size:13px;color:#666;margin-top:8px;">La preferencia se guarda en el navegador.</p>
+    </div>
+  </div>
 </body>
 </html>
