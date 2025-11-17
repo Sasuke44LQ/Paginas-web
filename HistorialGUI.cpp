@@ -9,20 +9,22 @@
 #include <sstream>
 #include <vector>
 
+using namespace std;
+
 // IDs de controles
 #define ID_LISTBOX 101
 #define ID_BTN_REFRESH 102
 #define ID_BTN_CLEAR 103
 #define ID_BTN_EXIT 104
 
-const wchar_t CLASS_NAME[] = L"HistorialGUIClass";
+const char CLASS_NAME[] = "HistorialGUIClass";
 
-// Lee el archivo historial.log y devuelve las líneas
-std::vector<std::wstring> leerHistorial() {
-    std::vector<std::wstring> lines;
-    std::wifstream f(L"historial.log");
+// Lee el archivo historial.log y devuelve las líneas (narrow strings)
+std::vector<std::string> leerHistorial() {
+    std::vector<std::string> lines;
+    std::ifstream f("historial.log");
     if (!f.is_open()) return lines;
-    std::wstring line;
+    std::string line;
     while (std::getline(f, line)) {
         if (!line.empty()) lines.push_back(line);
     }
@@ -31,11 +33,11 @@ std::vector<std::wstring> leerHistorial() {
 
 // Llena el listbox con las entradas del historial
 void llenarListbox(HWND hwndList) {
-    SendMessage(hwndList, LB_RESETCONTENT, 0, 0);
+    SendMessageA(hwndList, LB_RESETCONTENT, 0, 0);
     auto lines = leerHistorial();
     for (size_t i = 0; i < lines.size(); ++i) {
-        std::wstring entry = std::to_wstring(i+1) + L") " + lines[i];
-        SendMessage(hwndList, LB_ADDSTRING, 0, (LPARAM)entry.c_str());
+        std::string entry = std::to_string(i+1) + ") " + lines[i];
+        SendMessageA(hwndList, LB_ADDSTRING, 0, (LPARAM)entry.c_str());
     }
 }
 
@@ -49,19 +51,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     switch (uMsg) {
     case WM_CREATE: {
         // Crear controles
-        hwndList = CreateWindowW(L"LISTBOX", NULL,
+        hwndList = CreateWindowA("LISTBOX", NULL,
             WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_HASSTRINGS,
             10, 10, 560, 300, hwnd, (HMENU)ID_LISTBOX, NULL, NULL);
 
-        CreateWindowW(L"BUTTON", L"Actualizar",
+        CreateWindowA("BUTTON", "Actualizar",
             WS_CHILD | WS_VISIBLE,
             10, 320, 120, 30, hwnd, (HMENU)ID_BTN_REFRESH, NULL, NULL);
 
-        CreateWindowW(L"BUTTON", L"Limpiar historial",
+        CreateWindowA("BUTTON", "Limpiar historial",
             WS_CHILD | WS_VISIBLE,
             140, 320, 140, 30, hwnd, (HMENU)ID_BTN_CLEAR, NULL, NULL);
 
-        CreateWindowW(L"BUTTON", L"Salir",
+        CreateWindowA("BUTTON", "Salir",
             WS_CHILD | WS_VISIBLE,
             540, 320, 80, 30, hwnd, (HMENU)ID_BTN_EXIT, NULL, NULL);
 
@@ -84,21 +86,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         PostQuitMessage(0);
         return 0;
     }
-    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+    return DefWindowProcA(hwnd, uMsg, wParam, lParam);
 }
-
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow) {
-    WNDCLASS wc = {};
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow) {
+    WNDCLASSA wc = {};
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = CLASS_NAME;
 
-    RegisterClass(&wc);
+    RegisterClassA(&wc);
 
-    HWND hwnd = CreateWindowEx(
+    HWND hwnd = CreateWindowExA(
         0,
         CLASS_NAME,
-        L"Historial de Operaciones - Matrices",
+        "Historial de Operaciones - Matrices",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, 600, 400,
         NULL,
@@ -113,9 +114,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 
     // Bucle de mensajes
     MSG msg = {};
-    while (GetMessage(&msg, NULL, 0, 0)) {
+    while (GetMessageA(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        DispatchMessageA(&msg);
     }
 
     return 0;

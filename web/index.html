@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Matrices & Vectores - Web UI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Matrices & Vectores (Web)</h1>
+    <nav>
+      <button id="btn-vectores">Vectores</button>
+      <button id="btn-matrices">Matrices</button>
+      <button id="btn-historial">Historial</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="sect-vectores" class="panel">
+      <h2>Operaciones con Vectores</h2>
+      <div class="grid">
+        <div>
+          <label>Vector A (coma-sep):</label>
+          <input id="vecA" placeholder="1,2,3" />
+        </div>
+        <div>
+          <label>Vector B (coma-sep):</label>
+          <input id="vecB" placeholder="4,5,6" />
+        </div>
+        <div>
+          <label>Escalar:</label>
+          <input id="escalar" placeholder="2" />
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button id="btn-sumar">Sumar</button>
+        <button id="btn-restar">Restar</button>
+        <button id="btn-punto">Producto punto</button>
+        <button id="btn-escalar">Multiplicar por escalar</button>
+        <button id="btn-norma">Norma de A</button>
+      </div>
+
+      <div class="output" id="out-vectores"></div>
+    </section>
+
+    <section id="sect-matrices" class="panel hidden">
+      <h2>Operaciones con Matrices</h2>
+      <div class="grid">
+        <div>
+          <label>Matriz A (filas separadas por ; y elementos por ,):</label>
+          <input id="matA" placeholder="1,2;3,4" />
+        </div>
+        <div>
+          <label>Matriz B (igual formato):</label>
+          <input id="matB" placeholder="5,6;7,8" />
+        </div>
+        <div>
+          <label>Vector b (para resolver Ax=b):</label>
+          <input id="vecBmat" placeholder="9,10" />
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button id="btn-m-sum">Sumar</button>
+        <button id="btn-m-mul">Multiplicar</button>
+        <button id="btn-transp">Transponer A</button>
+        <button id="btn-gauss">Resolver (Gauss) A x = b</button>
+        <button id="btn-jacobi">Resolver (Jacobi) A x = b</button>
+      </div>
+
+      <div class="output" id="out-matrices"></div>
+    </section>
+
+    <section id="sect-historial" class="panel hidden">
+      <h2>Historial</h2>
+      <div class="hist-ops">
+        <button id="btn-refresh">Refrescar</button>
+        <button id="btn-clear">Limpiar historial</button>
+        <button id="btn-export">Exportar (.jsonl)</button>
+        <input type="file" id="file-import" accept=".json,.jsonl" />
+        <label for="hist-tipo-filter" class="vis-label">Filtrar tipo:</label>
+        <select id="hist-tipo-filter"><option value="">(todos)</option></select>
+        <input id="hist-search" placeholder="Buscar texto..." />
+      </div>
+
+      <div class="hist-table-wrap">
+        <table id="hist-table">
+          <thead>
+            <tr><th>Timestamp</th><th>Tipo</th><th>Entradas</th><th>Resultado</th></tr>
+          </thead>
+          <tbody id="hist-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Modal detalle -->
+      <div id="hist-modal" class="modal hidden">
+        <div class="modal-content">
+          <button id="modal-close" class="modal-close">Cerrar</button>
+          <h3>Detalle de la entrada</h3>
+          <pre id="modal-pre"></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>Interfaz cliente. El historial se guarda en `localStorage`. Puedes exportar/importar JSONL para integrarlo con `historial.log`.</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
