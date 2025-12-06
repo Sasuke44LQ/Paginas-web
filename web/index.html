@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Calculadora y herramienta educativa para operaciones con matrices y vectores">
   <title>Matrices & Vectores - Web UI</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body data-app="matrices-vectores-calculator">
   <header>
     <h1>Matrices & Vectores (Web)</h1>
     <nav>
@@ -196,6 +197,8 @@
       <p style="font-size:13px;color:#666;margin-top:8px;">La preferencia se guarda en el navegador.</p>
     </div>
   </div>
-  <script src="app.js"></script>
+  
+  <!-- Carga la aplicación como módulo ES6 -->
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
