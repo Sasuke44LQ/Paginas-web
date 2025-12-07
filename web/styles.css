@@ -205,6 +205,19 @@ footer { padding: 8px 16px; text-align: center; color: var(--muted); }
 .steps .minor { font-size:12px; color:var(--muted); margin-top:4px; }
 .vector-visual { display:none; }
 
+/* Controls / Steps helpers (visibilidad y contador) */
+.controls-row { display:flex; align-items:center; gap:8px; }
+.step-controls { display:flex; align-items:center; gap:6px; }
+.step-controls.hidden, .step-controls[aria-hidden="true"] { display:none !important; }
+.step-counter { font-size:13px; color:var(--muted); min-width:60px; text-align:center; }
+
+/* Accessible focus styles for interactive elements */
+button:focus-visible, .small-btn:focus-visible, .buttons button:focus-visible {
+	outline: 3px solid rgba(59,130,246,0.18);
+	outline-offset: 2px;
+	box-shadow: 0 0 0 3px rgba(59,130,246,0.06);
+}
+
 
 /* --------------------------------------------------------------------------
 	 Theme-specific small overrides
