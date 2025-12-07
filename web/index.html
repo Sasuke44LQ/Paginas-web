@@ -10,7 +10,8 @@
 <body data-app="matrices-vectores-calculator">
   <header>
     <h1>Matrices & Vectores (Web)</h1>
-    <nav>
+    <!-- Navegación principal: conserva los IDs para los handlers JS -->
+    <nav role="navigation" aria-label="Main navigation">
       <button id="btn-vectores">Vectores</button>
       <button id="btn-matrices">Matrices</button>
       <button id="btn-historial">Historial</button>
@@ -19,24 +20,28 @@
   </header>
 
   <main>
-    <section id="sect-vectores" class="panel">
-      <h2>Operaciones con Vectores</h2>
-      <div class="grid">
+    <!-- ===================== SECCIÓN: VECTORES ============================== -->
+    <section id="sect-vectores" class="panel" aria-labelledby="h2-vectores">
+      <h2 id="h2-vectores">Operaciones con Vectores</h2>
+
+      <!-- Entradas de usuario -->
+      <form class="grid" aria-describedby="help-vectores" onsubmit="return false;" novalidate>
         <div>
-          <label>Vector A (coma-sep):</label>
+          <label for="vecA">Vector A (coma-sep):</label>
           <input id="vecA" placeholder="1,2,3" />
         </div>
         <div>
-          <label>Vector B (coma-sep):</label>
+          <label for="vecB">Vector B (coma-sep):</label>
           <input id="vecB" placeholder="4,5,6" />
         </div>
         <div>
-          <label>Escalar:</label>
+          <label for="escalar">Escalar:</label>
           <input id="escalar" placeholder="2" />
         </div>
-      </div>
+      </form>
 
-      <div class="buttons">
+      <!-- Acciones / botones (IDs preservados) -->
+      <div class="buttons" role="group" aria-label="Operaciones vectores">
         <button id="btn-sumar">Sumar</button>
         <button id="btn-restar">Restar</button>
         <button id="btn-punto">Producto punto</button>
@@ -44,40 +49,43 @@
         <button id="btn-norma">Norma de A</button>
       </div>
 
+      <!-- Resultados y controles de pasos -->
       <div class="result-label">Resultado:</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div class="controls-row" style="margin-bottom:8px;">
         <label class="vis-label" style="margin:0"><input type="checkbox" id="show-steps-vectores"> Mostrar pasos</label>
-        <div id="step-controls-vectores" style="display:none;align-items:center;gap:6px">
+        <div id="step-controls-vectores" class="step-controls hidden" aria-hidden="true">
           <button id="prev-step-vectores" class="small-btn">Anterior</button>
-          <span id="step-counter-vectores" style="font-size:13px;color:var(--muted)"></span>
+          <span id="step-counter-vectores" class="step-counter"></span>
           <button id="next-step-vectores" class="small-btn">Siguiente</button>
           <button id="show-all-steps-vectores" class="small-btn">Mostrar todo</button>
           <button id="print-steps-vectores" class="small-btn">Imprimir pasos</button>
         </div>
       </div>
+
       <div class="output" id="out-vectores"></div>
       <div class="steps" id="steps-vectores" aria-live="polite"></div>
-      <!-- Visualizador eliminado (no implementado) -->
     </section>
 
-    <section id="sect-matrices" class="panel hidden">
-      <h2>Operaciones con Matrices</h2>
-      <div class="grid">
+    <!-- ===================== SECCIÓN: MATRICES ============================== -->
+    <section id="sect-matrices" class="panel hidden" aria-labelledby="h2-matrices">
+      <h2 id="h2-matrices">Operaciones con Matrices</h2>
+
+      <form class="grid" onsubmit="return false;" novalidate>
         <div>
-          <label>Matriz A (filas separadas por ; y elementos por ,):</label>
+          <label for="matA">Matriz A (filas separadas por ; y elementos por ,):</label>
           <input id="matA" placeholder="1,2;3,4" />
         </div>
         <div>
-          <label>Matriz B (igual formato):</label>
+          <label for="matB">Matriz B (igual formato):</label>
           <input id="matB" placeholder="5,6;7,8" />
         </div>
         <div>
-          <label>Vector b (para resolver Ax=b):</label>
+          <label for="vecBmat">Vector b (para resolver Ax=b):</label>
           <input id="vecBmat" placeholder="9,10" />
         </div>
-      </div>
+      </form>
 
-      <div class="buttons">
+      <div class="buttons" role="group" aria-label="Operaciones matrices">
         <button id="btn-m-sum">Sumar</button>
         <button id="btn-m-mul">Multiplicar</button>
         <button id="btn-det" title="Determinante">Determinante</button>
@@ -86,25 +94,28 @@
       </div>
 
       <div class="result-label">Resultado:</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div class="controls-row" style="margin-bottom:8px;">
         <label class="vis-label" style="margin:0"><input type="checkbox" id="show-steps-matrices"> Mostrar pasos</label>
-        <div id="step-controls-matrices" style="display:none;align-items:center;gap:6px">
+        <div id="step-controls-matrices" class="step-controls hidden" aria-hidden="true">
           <button id="prev-step-matrices" class="small-btn">Anterior</button>
-          <span id="step-counter-matrices" style="font-size:13px;color:var(--muted)"></span>
+          <span id="step-counter-matrices" class="step-counter"></span>
           <button id="next-step-matrices" class="small-btn">Siguiente</button>
           <button id="show-all-steps-matrices" class="small-btn">Mostrar todo</button>
           <button id="print-steps-matrices" class="small-btn">Imprimir pasos</button>
         </div>
       </div>
+
       <div class="output" id="out-matrices"></div>
       <div class="steps" id="steps-matrices" aria-live="polite"></div>
     </section>
 
     <!-- Sección práctica eliminada (no implementada) -->
 
-    <section id="sect-historial" class="panel hidden">
-      <h2>Historial</h2>
-      <div class="hist-ops">
+    <!-- ===================== SECCIÓN: HISTORIAL ============================= -->
+    <section id="sect-historial" class="panel hidden" aria-labelledby="h2-historial">
+      <h2 id="h2-historial">Historial</h2>
+
+      <div class="hist-ops" role="toolbar" aria-label="Historial actions">
         <button id="btn-refresh">Refrescar</button>
         <button id="btn-clear">Limpiar historial</button>
         <button id="btn-export">Exportar (.jsonl)</button>
@@ -123,11 +134,11 @@
         </table>
       </div>
 
-      <!-- Modal detalle -->
-      <div id="hist-modal" class="modal hidden">
+      <!-- Modal detalle de historial -->
+      <div id="hist-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="hist-modal-title">
         <div class="modal-content">
           <button id="modal-close" class="modal-close">Cerrar</button>
-          <h3>Detalle de la entrada</h3>
+          <h3 id="hist-modal-title">Detalle de la entrada</h3>
           <pre id="modal-pre"></pre>
         </div>
       </div>
@@ -139,16 +150,15 @@
   </footer>
 
   <!-- Panel de configuración (tema: Sistema / Claro / Oscuro) -->
-  <div id="settings-panel" class="modal hidden">
+  <div id="settings-panel" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
     <div class="modal-content settings-content">
       <button id="settings-close" class="modal-close">Cerrar</button>
-      <h3>Configuración</h3>
-      <div class="setting-row">
+      <h3 id="settings-title">Configuración</h3>
+
+      <div class="setting-row" style="gap:12px;">
         <div>
           <input type="radio" id="theme-system" name="theme" value="system">
           <label for="theme-system">Sistema</label>
-    <!-- Control global de decimales en la configuración -->
-    <div style="position:fixed;right:16px;bottom:16px;z-index:50;display:none" id="decimal-toast"></div>
         </div>
         <div>
           <input type="radio" id="theme-light" name="theme" value="light">
@@ -159,14 +169,19 @@
           <label for="theme-dark">Oscuro</label>
         </div>
       </div>
-        <div class="setting-row" style="margin-top:8px;align-items:center;gap:8px">
-          <label for="decimals" style="font-weight:600;">Decimales</label>
-          <input type="number" id="decimals" min="0" max="12" step="1" style="width:72px;padding:6px;border-radius:6px;border:1px solid #ddd" />
-          <small style="color:#666;font-size:13px">Controla la cantidad de decimales mostrados en los resultados.</small>
-        </div>
+
+      <div class="setting-row" style="margin-top:8px;align-items:center;gap:8px">
+        <label for="decimals" style="font-weight:600;">Decimales</label>
+        <input type="number" id="decimals" min="0" max="12" step="1" style="width:72px;padding:6px;border-radius:6px;border:1px solid #ddd" />
+        <small style="color:#666;font-size:13px">Controla la cantidad de decimales mostrados en los resultados.</small>
+      </div>
+
       <p style="font-size:13px;color:#666;margin-top:8px;">La preferencia se guarda en el navegador.</p>
     </div>
   </div>
+
+  <!-- Toast / notificaciones pequeñas (posicionadas en la esquina) -->
+  <div id="decimal-toast" style="position:fixed;right:16px;bottom:16px;z-index:50;display:none"></div>
   
   <!-- Carga la aplicación -->
   <!-- Carga de módulos en orden de dependencia -->
