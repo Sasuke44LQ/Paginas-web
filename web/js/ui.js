@@ -108,6 +108,12 @@ function initHistory() {
     $('#hist-tipo-filter')?.addEventListener('change', fillHistory);
     $('#hist-search')?.addEventListener('input', fillHistory);
 
+    // Cerrar modal de historial
+    $('#modal-close')?.addEventListener('click', () => {
+      const m = $('#hist-modal');
+      if (m) m.classList.add('hidden');
+    });
+
     // Decimales control
     const decInput = $('#decimals');
     if (decInput) {
@@ -168,6 +174,39 @@ function fillHistory() {
     tr.appendChild(tdType);
     tr.appendChild(tdIn);
     tr.appendChild(tdOut);
+    // Al hacer clic en la fila, abrir modal con detalle (incluye pasos si existen)
+    tr.addEventListener('click', () => {
+      const modal = $('#hist-modal');
+      const pre = $('#modal-pre');
+      if (!modal || !pre) return;
+      const payload = {
+        operation: entry.operation,
+        input: entry.input,
+        output: entry.output,
+        type: entry.type,
+        timestamp: entry.timestamp,
+        steps: entry.steps || null
+      };
+      // Mostrar como JSON formateado; si hay pasos, agregarlos legibles al final
+      let text = JSON.stringify(payload, null, 2);
+      if (entry.steps && Array.isArray(entry.steps)) {
+        text += '\n\n--- Pasos ---\n\n';
+        // Render cada paso como texto plano (si es objeto, preferir concise/detailed según configuración de usuario)
+        const mode = localStorage.getItem(APP_CONFIG.STEPS_MODE_KEY) || APP_CONFIG.STEPS_MODE_DEFAULT || 'detailed';
+        entry.steps.forEach((s, i) => {
+          let t = '';
+          if (typeof s === 'string') t = s;
+          else if (s && typeof s === 'object') {
+            if (mode === 'concise' && s.concise) t = s.concise;
+            else if (mode === 'detailed' && s.detailed) t = s.detailed;
+            else t = (s.html || JSON.stringify(s));
+          } else t = String(s);
+          text += `Paso ${i+1}:\n${t}\n\n`;
+        });
+      }
+      pre.textContent = text;
+      modal.classList.remove('hidden');
+    });
     tbody.appendChild(tr);
   });
 }
@@ -212,6 +251,55 @@ function initSettingsPanel() {
   // Inicializar valor de decimales en settings
   const di = $('#decimals');
   if (di) di.value = getDecimals();
+
+  // Inicializar modo de pasos en settings
+  const mode = localStorage.getItem(APP_CONFIG.STEPS_MODE_KEY) || APP_CONFIG.STEPS_MODE_DEFAULT || 'detailed';
+  const rDet = $('#steps-detailed');
+  const rConc = $('#steps-concise');
+  if (rDet && rConc) {
+    if (mode === 'concise') rConc.checked = true;
+    else rDet.checked = true;
+
+    [rDet, rConc].forEach(r => r.addEventListener('change', (e) => {
+      const val = e.target.value;
+      setStepsMode(val);
+      // Re-renderizar pasos visibles para reflejar el nuevo modo
+      if ($('#show-steps-vectores') && $('#show-steps-vectores').checked) renderStep('vectores', STEP_STATE.vectores.idx || 0);
+      if ($('#show-steps-matrices') && $('#show-steps-matrices').checked) renderStep('matrices', STEP_STATE.matrices.idx || 0);
+    }));
+  }
+}
+
+// ============ CONTROLES DE PASOS (mostrar / navegar) ============
+function initStepControls() {
+  try {
+    // Vectores controls
+    const cbV = $('#show-steps-vectores');
+    if (cbV) cbV.addEventListener('change', () => {
+      if (cbV.checked) renderStep('vectores', STEP_STATE.vectores.idx || 0);
+      else clearSteps('vectores');
+    });
+
+    $('#prev-step-vectores')?.addEventListener('click', () => showPrevStep('vectores'));
+    $('#next-step-vectores')?.addEventListener('click', () => showNextStep('vectores'));
+    $('#show-all-steps-vectores')?.addEventListener('click', () => showAllSteps('vectores'));
+    $('#print-steps-vectores')?.addEventListener('click', () => printSteps('vectores'));
+
+    // Matrices controls
+    const cbM = $('#show-steps-matrices');
+    if (cbM) cbM.addEventListener('change', () => {
+      if (cbM.checked) renderStep('matrices', STEP_STATE.matrices.idx || 0);
+      else clearSteps('matrices');
+    });
+
+    $('#prev-step-matrices')?.addEventListener('click', () => showPrevStep('matrices'));
+    $('#next-step-matrices')?.addEventListener('click', () => showNextStep('matrices'));
+    $('#show-all-steps-matrices')?.addEventListener('click', () => showAllSteps('matrices'));
+    $('#print-steps-matrices')?.addEventListener('click', () => printSteps('matrices'));
+
+  } catch (error) {
+    console.error('Error inicializando controles de pasos:', error);
+  }
 }
 
 // ============ FUNCIÓN DE INICIALIZACIÓN PRINCIPAL ============
@@ -234,6 +322,8 @@ function init() {
 
     // Inicializar settings (tema)
     initSettingsPanel();
+    // Inicializar controles de pasos
+    initStepControls();
     loadTheme();
 
     console.log('✓ Aplicación inicializada correctamente');

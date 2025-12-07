@@ -12,6 +12,8 @@ const APP_CONFIG = {
   HISTORY_KEY: 'historial',
   DECIMALS_KEY: 'decimals',
   THEME_KEY: 'theme',
+  STEPS_MODE_KEY: 'steps_mode',
+  STEPS_MODE_DEFAULT: 'detailed', // 'detailed' | 'concise'
 };
 
 // Estado global
