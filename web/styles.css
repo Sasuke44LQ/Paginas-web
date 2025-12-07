@@ -1,55 +1,22 @@
-:root{
+/* --------------------------------------------------------------------------
+	 Variables (Temas) ------------------------------------------------------
+	 - Centraliza colores y tokens para facilitar ajustes globales
+-----------------------------------------------------------------------------*/
+:root {
 	--bg: #f3f4f6;
 	--panel-bg: #ffffff;
 	--text: #111111;
 	--muted: #666666;
 	--header-bg: #0b5ed7;
 	--accent: #0b5ed7;
-	--card-shadow: rgba(0,0,0,0.08);
+	--card-shadow: rgba(0, 0, 0, 0.08);
+	--radius: 8px;
+	--radius-sm: 6px;
+	--transition-fast: 200ms;
 }
 
-*{box-sizing:border-box;font-family:Segoe UI, Roboto, Arial, sans-serif}
-body{margin:0;background:var(--bg);color:var(--text)}
-header{background:var(--header-bg);color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
-header h1{margin:0;font-size:18px}
-nav{display:flex;align-items:center;gap:8px}
-nav button{margin-left:0;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.18);cursor:pointer;background:transparent;color:white}
-nav button:hover{background:rgba(255,255,255,0.06)}
-#btn-settings{font-size:18px;padding:6px 8px}
-main{padding:16px}
-.panel{background:var(--panel-bg);padding:16px;border-radius:8px;box-shadow:0 1px 3px var(--card-shadow);max-width:960px;margin:12px auto}
-.hidden{display:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:12px}
-.grid label{display:block;font-size:13px;margin-bottom:6px}
-.grid input{width:100%;padding:8px;border-radius:6px;border:1px solid #ddd}
-.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.buttons button{padding:8px 12px;border-radius:6px;border:1px solid #0b5ed7;background:#0b5ed7;color:white;cursor:pointer}
-.output{background:#f8fafc;padding:12px;border-radius:6px;border:1px dashed #e5e7eb;min-height:40px}
-footer{padding:8px 16px;text-align:center;color:var(--muted)}
-#list-hist{list-style:none;padding:0;margin:8px 0}
-#list-hist{list-style:none;padding:0;margin:8px 0}
-#list-hist li{padding:8px;border-bottom:1px solid #eee}
-.hist-table-wrap{overflow:auto}
-#hist-table{width:100%;border-collapse:collapse;margin-top:8px}
-#hist-table th, #hist-table td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:13px}
-#hist-table thead th{background:#fafafa}
-.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#0b5ed7;font-size:12px}
-.vis-label{margin-left:8px;color:#444;font-size:13px}
-
-/* Modal */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center}
-.modal.hidden{display:none}
-.modal-content{background:var(--panel-bg);padding:16px;border-radius:8px;max-width:800px;width:90%;max-height:80vh;overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,0.2)}
-.modal-close{float:right;background:var(--bg);border:1px solid #ddd;padding:6px 10px;border-radius:6px;cursor:pointer}
-.modal pre{background:#0f1724;color:#e6eef8;padding:12px;border-radius:6px;overflow:auto}
-.hist-ops{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.hist-ops button{padding:6px 10px;border-radius:6px;border:1px solid #666;background:#eee;cursor:pointer}
-
-/* Settings panel specific */
-.settings-content .setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:8px}
-
-/* Dark theme overrides */
-.dark{
+/* Dark theme variables: applied by adding the `.dark` class on <html> or <body> */
+.dark {
 	--bg: #0b1220;
 	--panel-bg: #0f1720;
 	--text: #e6eef8;
@@ -59,44 +26,196 @@ footer{padding:8px 16px;text-align:center;color:var(--muted)}
 	--card-shadow: rgba(4, 103, 252, 0.6);
 }
 
-/* Smooth theme transition */
-body{transition:background 200ms ease,color 200ms ease}
 
-/* Visualización de vectores y matrices */
-.input-preview{font-size:13px;color:var(--muted);margin-top:6px}
-.vector-chip{display:inline-block;background:rgba(11,94,215,0.08);color:var(--accent);padding:6px 10px;border-radius:999px;margin:4px 4px 4px 0;border:1px solid rgba(11,94,215,0.12);font-weight:600}
-.result-label{font-size:13px;color:var(--muted);margin-bottom:6px}
-.matrix-table{border-collapse:collapse;margin:6px 0}
-.matrix-table td{border:1px solid rgba(0,0,0,0.08);padding:6px 10px;text-align:right;min-width:44px}
-.matrix-table th{padding:6px 10px;text-align:left;font-weight:600}
+/* --------------------------------------------------------------------------
+	 Reset / Base
+-----------------------------------------------------------------------------*/
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--text);
+	font-family: "Segoe UI", Roboto, Arial, sans-serif;
+	transition: background var(--transition-fast) ease, color var(--transition-fast) ease;
+}
 
-.dark .vector-chip{background:rgba(58,160,255,0.08);color:var(--accent)}
-.dark .matrix-table td{border-color:rgba(255,255,255,0.06)}
-
-
-/* Pasos detallados */
-.steps{background:var(--panel-bg);border:1px dashed rgba(0,0,0,0.06);padding:10px;border-radius:6px;margin-top:8px}
-.step-item{padding:6px 8px;border-radius:6px;background:rgba(0,0,0,0.03);margin-bottom:6px;font-size:13px}
-.step-item code{background:transparent;padding:0;font-weight:600}
-.steps ol{margin:0;padding-left:20px}
-.steps .minor{font-size:12px;color:var(--muted);margin-top:4px}
-
-/* Visualizador de vectores (el visualizador fue eliminado del HTML) */
-.vector-visual{display:none}
-
-/* Mensajes de error y feedback */
-.msg-error{color:#b00020;background:rgba(176,0,32,0.06);padding:8px;border-radius:6px;border:1px solid rgba(176,0,32,0.12);margin:8px 0}
-.msg-info{color:var(--muted);background:rgba(0,0,0,0.02);padding:6px;border-radius:6px;margin:6px 0}
-
-/* Práctica (eliminada) */
-#sect-practice{display:none}
+.hidden { display: none; }
 
 
-.dark .steps{border-color:rgba(255,255,255,0.04)}
-.dark .step-item{background:rgba(255,255,255,0.02)}
+/* --------------------------------------------------------------------------
+	 Layout (Header / Main / Footer)
+-----------------------------------------------------------------------------*/
+header {
+	background: var(--header-bg);
+	color: white;
+	padding: 12px 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+header h1 { margin: 0; font-size: 18px; }
 
-/* Small buttons for step controls */
-.small-btn{padding:6px 8px;border-radius:6px;border:1px solid #bbb;background:var(--panel-bg);cursor:pointer}
-.small-btn:hover{background:#f3f6ff}
-.dark .small-btn{background:var(--panel-bg)}
+nav { display: flex; align-items: center; gap: 8px; }
+nav button {
+	margin-left: 0;
+	padding: 8px 10px;
+	border-radius: var(--radius-sm);
+	border: 1px solid rgba(255,255,255,0.18);
+	cursor: pointer;
+	background: transparent;
+	color: white;
+}
+nav button:hover { background: rgba(255,255,255,0.06); }
+#btn-settings { font-size: 18px; padding: 6px 8px; }
+
+main { padding: 16px; }
+.panel {
+	background: var(--panel-bg);
+	padding: 16px;
+	border-radius: var(--radius);
+	box-shadow: 0 1px 3px var(--card-shadow);
+	max-width: 960px;
+	margin: 12px auto;
+}
+
+footer { padding: 8px 16px; text-align: center; color: var(--muted); }
+
+
+/* --------------------------------------------------------------------------
+	 Grid & Forms
+-----------------------------------------------------------------------------*/
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 8px;
+	margin-bottom: 12px;
+}
+.grid label { display: block; font-size: 13px; margin-bottom: 6px; }
+.grid input, .grid textarea {
+	width: 100%;
+	padding: 8px;
+	border-radius: var(--radius-sm);
+	border: 1px solid #ddd;
+}
+
+.buttons { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.buttons button {
+	padding: 8px 12px;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--accent);
+	background: var(--accent);
+	color: white;
+	cursor: pointer;
+}
+
+.small-btn {
+	padding:6px 8px;
+	border-radius:6px;
+	border:1px solid #bbb;
+	background:var(--panel-bg);
+	cursor:pointer;
+}
+.small-btn:hover { background:#f3f6ff; }
+
+
+/* --------------------------------------------------------------------------
+	 Output / Cards / Utilities
+-----------------------------------------------------------------------------*/
+.output {
+	background: #f8fafc;
+	padding: 12px;
+	border-radius: var(--radius-sm);
+	border: 1px dashed #e5e7eb;
+	min-height: 40px;
+}
+.badge {
+	display:inline-block; padding:2px 8px; border-radius:999px;
+	background:#eef2ff; color:var(--accent); font-size:12px;
+}
+
+.msg-error {
+	color:#b00020; background:rgba(176,0,32,0.06);
+	padding:8px; border-radius:6px; border:1px solid rgba(176,0,32,0.12);
+	margin:8px 0;
+}
+.msg-info {
+	color:var(--muted); background:rgba(0,0,0,0.02);
+	padding:6px; border-radius:6px; margin:6px 0;
+}
+
+
+/* --------------------------------------------------------------------------
+	 Tables / History
+-----------------------------------------------------------------------------*/
+.hist-table-wrap { overflow: auto; }
+#hist-table { width:100%; border-collapse:collapse; margin-top:8px; }
+#hist-table th, #hist-table td { padding:8px; border-bottom:1px solid #eee; text-align:left; font-size:13px; }
+#hist-table thead th { background:#fafafa; }
+
+#list-hist { list-style:none; padding:0; margin:8px 0; }
+#list-hist li { padding:8px; border-bottom:1px solid #eee; }
+
+
+/* --------------------------------------------------------------------------
+	 Matrix / Vector rendering
+-----------------------------------------------------------------------------*/
+.matrix-table { border-collapse:collapse; margin:6px 0; }
+.matrix-table td { border:1px solid rgba(0,0,0,0.08); padding:6px 10px; text-align:right; min-width:44px; }
+.matrix-table th { padding:6px 10px; text-align:left; font-weight:600; }
+
+.vector-chip {
+	display:inline-block;
+	background: rgba(11,94,215,0.08);
+	color: var(--accent);
+	padding:6px 10px;
+	border-radius:999px;
+	margin:4px 4px 4px 0;
+	border:1px solid rgba(11,94,215,0.12);
+	font-weight:600;
+}
+.result-label { font-size:13px; color:var(--muted); margin-bottom:6px; }
+.input-preview { font-size:13px; color:var(--muted); margin-top:6px; }
+
+
+/* --------------------------------------------------------------------------
+	 Modal
+-----------------------------------------------------------------------------*/
+.modal {
+	position:fixed; inset:0; background:rgba(0,0,0,0.45);
+	display:flex; align-items:center; justify-content:center;
+}
+.modal.hidden { display:none; }
+.modal-content {
+	background: var(--panel-bg); padding:16px; border-radius: var(--radius);
+	max-width:800px; width:90%; max-height:80vh; overflow:auto;
+	box-shadow:0 8px 30px rgba(0,0,0,0.2);
+}
+.modal-close { float:right; background:var(--bg); border:1px solid #ddd; padding:6px 10px; border-radius:6px; cursor:pointer; }
+.modal pre { background:#0f1724; color:#e6eef8; padding:12px; border-radius:6px; overflow:auto; }
+
+
+/* --------------------------------------------------------------------------
+	 Steps / Process helpers
+-----------------------------------------------------------------------------*/
+.steps { background:var(--panel-bg); border:1px dashed rgba(0,0,0,0.06); padding:10px; border-radius:6px; margin-top:8px; }
+.step-item { padding:6px 8px; border-radius:6px; background:rgba(0,0,0,0.03); margin-bottom:6px; font-size:13px; }
+.step-item code { background:transparent; padding:0; font-weight:600; }
+.steps ol { margin:0; padding-left:20px; }
+.steps .minor { font-size:12px; color:var(--muted); margin-top:4px; }
+.vector-visual { display:none; }
+
+
+/* --------------------------------------------------------------------------
+	 Theme-specific small overrides
+-----------------------------------------------------------------------------*/
+.dark .vector-chip { background: rgba(58,160,255,0.08); color: var(--accent); }
+.dark .matrix-table td { border-color: rgba(255,255,255,0.06); }
+.dark .steps { border-color: rgba(255,255,255,0.04); }
+.dark .step-item { background: rgba(255,255,255,0.02); }
+.dark .small-btn { background: var(--panel-bg); }
+
+/* Section removed from UI */
+#sect-practice { display: none; }
+
 
