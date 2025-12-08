@@ -144,6 +144,10 @@ footer { padding: 8px 16px; text-align: center; color: var(--muted); }
 	padding:6px; border-radius:6px; margin:6px 0;
 }
 
+.msg-success {
+  color: #065f46; background: rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.12); padding:8px; border-radius:6px; margin:6px 0;
+}
+
 
 /* --------------------------------------------------------------------------
 	 Tables / History
@@ -174,6 +178,9 @@ footer { padding: 8px 16px; text-align: center; color: var(--muted); }
 	border:1px solid rgba(11,94,215,0.12);
 	font-weight:600;
 }
+.matrix-input-table { border-collapse: collapse; margin:6px 0; }
+.matrix-input-table td { padding:6px 8px; border:1px solid rgba(0,0,0,0.06); }
+.matrix-input-table input.matrix-input-cell { width:72px; padding:6px; border-radius:6px; border:1px solid #ddd; text-align:right; }
 .result-label { font-size:13px; color:var(--muted); margin-bottom:6px; }
 .input-preview { font-size:13px; color:var(--muted); margin-top:6px; }
 
@@ -241,7 +248,9 @@ button:focus-visible, .small-btn:focus-visible, .buttons button:focus-visible {
 .dark .step-item { background: rgba(255,255,255,0.02); }
 .dark .small-btn { background: var(--panel-bg); }
 
-/* Section removed from UI */
-#sect-practice { display: none; }
+/* Practice section styles */
+#sect-practice { display: block; }
+#sect-practice .output { min-height: auto; }
+#steps-practice .step-item .explanation { display: block; margin-top:6px; color:var(--muted); font-size:13px; }
 
 

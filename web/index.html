@@ -14,6 +14,7 @@
     <nav role="navigation" aria-label="Main navigation">
       <button id="btn-vectores">Vectores</button>
       <button id="btn-matrices">Matrices</button>
+      <button id="btn-practice">Práctica</button>
       <button id="btn-historial">Historial</button>
       <button id="btn-settings" title="Configuración">⚙️</button>
     </nav>
@@ -27,12 +28,12 @@
       <!-- Entradas de usuario -->
       <form class="grid" aria-describedby="help-vectores" onsubmit="return false;" novalidate>
         <div>
-          <label for="vecA">Vector A (coma-sep):</label>
-          <input id="vecA" placeholder="1,2,3" />
+          <label for="vecA">Vector A (usa comas o espacios):</label>
+          <textarea id="vecA" placeholder="1, 2, 3" rows="2"></textarea>
         </div>
         <div>
-          <label for="vecB">Vector B (coma-sep):</label>
-          <input id="vecB" placeholder="4,5,6" />
+          <label for="vecB">Vector B (usa comas o espacios):</label>
+          <textarea id="vecB" placeholder="4, 5, 6" rows="2"></textarea>
         </div>
         <div>
           <label for="escalar">Escalar:</label>
@@ -72,16 +73,26 @@
 
       <form class="grid" onsubmit="return false;" novalidate>
         <div>
-          <label for="matA">Matriz A (filas separadas por ; y elementos por ,):</label>
-          <input id="matA" placeholder="1,2;3,4" />
+          <label>Matriz A (crea la grilla por dimensiones):</label>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px;">
+            <label>Filas: <input id="matA-rows" type="number" min="1" value="2" style="width:72px;padding:6px;border-radius:6px;border:1px solid #ddd"></label>
+            <label>Columnas: <input id="matA-cols" type="number" min="1" value="2" style="width:72px;padding:6px;border-radius:6px;border:1px solid #ddd"></label>
+            <button id="btn-matA-create" class="small-btn">Crear matriz A</button>
+          </div>
+          <div id="matA-grid" class="output" style="margin-top:8px;min-height:60px" aria-label="Matriz A"></div>
         </div>
         <div>
-          <label for="matB">Matriz B (igual formato):</label>
-          <input id="matB" placeholder="5,6;7,8" />
+          <label>Matriz B (crea la grilla por dimensiones):</label>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px;">
+            <label>Filas: <input id="matB-rows" type="number" min="1" value="2" style="width:72px;padding:6px;border-radius:6px;border:1px solid #ddd"></label>
+            <label>Columnas: <input id="matB-cols" type="number" min="1" value="2" style="width:72px;padding:6px;border-radius:6px;border:1px solid #ddd"></label>
+            <button id="btn-matB-create" class="small-btn">Crear matriz B</button>
+          </div>
+          <div id="matB-grid" class="output" style="margin-top:8px;min-height:60px" aria-label="Matriz B"></div>
         </div>
         <div>
-          <label for="vecBmat">Vector b (para resolver Ax=b):</label>
-          <input id="vecBmat" placeholder="9,10" />
+          <label for="vecBmat">Vector b (usa comas o espacios):</label>
+          <textarea id="vecBmat" placeholder="9, 10" rows="2"></textarea>
         </div>
       </form>
 
@@ -110,6 +121,60 @@
     </section>
 
     <!-- Sección práctica eliminada (no implementada) -->
+    <section id="sect-practice" class="panel hidden" aria-labelledby="h2-practice">
+      <h2 id="h2-practice">Práctica — Generar ejercicios</h2>
+
+      <div class="grid">
+        <div>
+          <label for="ex-type">Tipo de ejercicio</label>
+          <select id="ex-type">
+            <option value="vector-sum">Suma de vectores</option>
+            <option value="vector-dot">Producto punto</option>
+            <option value="vector-scalar">Multiplicación por escalar</option>
+            <option value="vector-norm">Norma</option>
+            <option value="matrix-sum">Suma de matrices</option>
+            <option value="matrix-mul">Multiplicación de matrices</option>
+            <option value="matrix-det">Determinante</option>
+            <option value="matrix-gauss">Resolver Ax = b (Gauss)</option>
+          </select>
+        </div>
+        <div>
+          <label for="ex-difficulty">Dificultad</label>
+          <select id="ex-difficulty">
+            <option value="easy">Fácil</option>
+            <option value="medium">Media</option>
+            <option value="hard">Difícil</option>
+          </select>
+        </div>
+        <div>
+          <label for="ex-seed">Semilla (opcional)</label>
+          <input id="ex-seed" placeholder="número (opcional)" />
+        </div>
+      </div>
+
+      <div class="buttons" style="margin-bottom:8px;">
+        <button id="btn-gen-ex">Generar ejercicio</button>
+        <button id="btn-check-answer">Comprobar respuesta</button>
+        <button id="btn-show-solution">Mostrar solución / pasos</button>
+      </div>
+
+      <div class="result-label">Ejercicio:</div>
+      <div class="output" id="out-exercise"></div>
+
+      <div class="result-label">Tu respuesta (si aplica):</div>
+      <div class="grid">
+        <div>
+          <label for="answer-input">Respuesta</label>
+          <input id="answer-input" placeholder="Introduce tu respuesta aquí" />
+        </div>
+      </div>
+
+      <div id="practice-feedback" class="msg-info" role="status" aria-live="polite"></div>
+
+      <div class="result-label">Resultado / Pasos:</div>
+      <div class="steps" id="steps-practice" aria-live="polite"></div>
+
+    </section>
 
     <!-- ===================== SECCIÓN: HISTORIAL ============================= -->
     <section id="sect-historial" class="panel hidden" aria-labelledby="h2-historial">
@@ -202,6 +267,7 @@
   <script src="js/utils.js"></script>
   <script src="js/vectors.js"></script>
   <script src="js/matrices.js"></script>
+  <script src="js/exercises.js"></script>
   <script src="js/ui.js"></script>
 </body>
 </html>

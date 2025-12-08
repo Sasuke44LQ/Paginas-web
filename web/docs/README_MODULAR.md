@@ -15,7 +15,8 @@ Los módulos se cargan en este orden específico en `index.html`:
 <script src="js/utils.js"></script>     <!-- 2. Utilidades -->
 <script src="js/vectors.js"></script>   <!-- 3. Operaciones vectoriales -->
 <script src="js/matrices.js"></script>  <!-- 4. Operaciones matriciales -->
-<script src="js/ui.js"></script>        <!-- 5. UI e Inicialización -->
+<script src="js/exercises.js"></script> <!-- 5. Generador de ejercicios / práctica -->
+<script src="js/ui.js"></script>        <!-- 6. UI e Inicialización -->
 ```
 
 **Importante:** El orden es crítico porque cada módulo depende de los anteriores.
@@ -107,6 +108,20 @@ Maneja eventos de:
 Salida → `#out-vectores`
 
 **Dependencias:** `config.js`, `utils.js`
+
+---
+
+### Entrada de matrices (grilla)
+La interfaz soporta dos modos de entrada para matrices:
+
+- **Grilla por casillas (recomendada):** La UI permite crear una grilla de inputs por dimensiones usando los controles en la sección de matrices. Los IDs relevantes son:
+  - `#matA-rows`, `#matA-cols`, `#btn-matA-create`, `#matA-grid` (contenedor)
+  - `#matB-rows`, `#matB-cols`, `#btn-matB-create`, `#matB-grid` (contenedor)
+  - Las funciones de utilidad en `utils.js` expuestas son: `buildMatrixGrid(container, rows, cols, namePrefix, values)` y `readMatrixGrid(container)`.
+
+- **Fallback de texto:** Si no se crea una grilla, la aplicación mantiene compatibilidad con el antiguo `textarea` (`#matA`, `#matB`) que acepta filas por línea y elementos separados por comas o espacios.
+
+Los módulos `matrices.js` y `exercises.js` prefieren leer desde la grilla si existe; de lo contrario usan el `textarea`.
 
 ---
 

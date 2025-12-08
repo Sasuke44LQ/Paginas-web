@@ -36,6 +36,9 @@ function initNavigation() {
     $('#btn-matrices')?.addEventListener('click', () => {
       showSection('sect-matrices');
     });
+    $('#btn-practice')?.addEventListener('click', () => {
+      showSection('sect-practice');
+    });
 
     $('#btn-historial')?.addEventListener('click', () => {
       showSection('sect-historial');
@@ -266,6 +269,7 @@ function initSettingsPanel() {
       // Re-renderizar pasos visibles para reflejar el nuevo modo
       if ($('#show-steps-vectores') && $('#show-steps-vectores').checked) renderStep('vectores', STEP_STATE.vectores.idx || 0);
       if ($('#show-steps-matrices') && $('#show-steps-matrices').checked) renderStep('matrices', STEP_STATE.matrices.idx || 0);
+      if ($('#show-steps-practice') && $('#show-steps-practice').checked) renderStep('practice', STEP_STATE.practice.idx || 0);
     }));
   }
 }
@@ -297,6 +301,18 @@ function initStepControls() {
     $('#show-all-steps-matrices')?.addEventListener('click', () => showAllSteps('matrices'));
     $('#print-steps-matrices')?.addEventListener('click', () => printSteps('matrices'));
 
+    // Practice controls
+    const cbP = $('#show-steps-practice');
+    if (cbP) cbP.addEventListener('change', () => {
+      if (cbP.checked) renderStep('practice', STEP_STATE.practice.idx || 0);
+      else clearSteps('practice');
+    });
+
+    $('#prev-step-practice')?.addEventListener('click', () => showPrevStep('practice'));
+    $('#next-step-practice')?.addEventListener('click', () => showNextStep('practice'));
+    $('#show-all-steps-practice')?.addEventListener('click', () => showAllSteps('practice'));
+    $('#print-steps-practice')?.addEventListener('click', () => printSteps('practice'));
+
   } catch (error) {
     console.error('Error inicializando controles de pasos:', error);
   }
@@ -316,6 +332,9 @@ function init() {
 
     // Inicializar operaciones de matrices
     initMatrixOperations();
+
+    // Inicializar práctica (si existe)
+    if (window.initExercises) window.initExercises();
 
     // Inicializar historial
     initHistory();

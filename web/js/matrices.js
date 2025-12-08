@@ -125,8 +125,12 @@ function initMatrixOperations() {
   try {
     // Suma de matrices
     $('#btn-m-sum')?.addEventListener('click', () => {
-      const m1 = parseMatrix($('#matA').value);
-      const m2 = parseMatrix($('#matB').value);
+      let m1 = null;
+      let m2 = null;
+      if ($('#matA-grid') && $('#matA-grid').querySelector('input.matrix-input-cell')) m1 = readMatrixGrid('#matA-grid');
+      else m1 = parseMatrix($('#matA') ? $('#matA').value : '');
+      if ($('#matB-grid') && $('#matB-grid').querySelector('input.matrix-input-cell')) m2 = readMatrixGrid('#matB-grid');
+      else m2 = parseMatrix($('#matB') ? $('#matB').value : '');
       
       if (!m1 || !m2) {
         alert('Ingresa dos matrices válidas');
@@ -173,8 +177,12 @@ function initMatrixOperations() {
 
     // Multiplicación de matrices
     $('#btn-m-mul')?.addEventListener('click', () => {
-      const m1 = parseMatrix($('#matA').value);
-      const m2 = parseMatrix($('#matB').value);
+      let m1 = null;
+      let m2 = null;
+      if ($('#matA-grid') && $('#matA-grid').querySelector('input.matrix-input-cell')) m1 = readMatrixGrid('#matA-grid');
+      else m1 = parseMatrix($('#matA') ? $('#matA').value : '');
+      if ($('#matB-grid') && $('#matB-grid').querySelector('input.matrix-input-cell')) m2 = readMatrixGrid('#matB-grid');
+      else m2 = parseMatrix($('#matB') ? $('#matB').value : '');
       
       if (!m1 || !m2) {
         alert('Ingresa dos matrices válidas');
@@ -221,7 +229,7 @@ function initMatrixOperations() {
 
     // Transpuesta de A
     $('#btn-transp')?.addEventListener('click', () => {
-      const m = parseMatrix($('#matA').value);
+      const m = ($('#matA-grid') && $('#matA-grid').querySelector('input.matrix-input-cell')) ? readMatrixGrid('#matA-grid') : parseMatrix($('#matA') ? $('#matA').value : '');
       if (!m) {
         alert('Ingresa una matriz válida');
         return;
@@ -248,7 +256,7 @@ function initMatrixOperations() {
 
     // Determinante de A
     $('#btn-det')?.addEventListener('click', () => {
-      const m = parseMatrix($('#matA').value);
+      const m = ($('#matA-grid') && $('#matA-grid').querySelector('input.matrix-input-cell')) ? readMatrixGrid('#matA-grid') : parseMatrix($('#matA') ? $('#matA').value : '');
       
       if (!m) {
         alert('Ingresa una matriz válida');
@@ -285,7 +293,7 @@ function initMatrixOperations() {
 
     // Resolver por Gauss (Ax = b)
     $('#btn-gauss')?.addEventListener('click', () => {
-      const A = parseMatrix($('#matA').value);
+      const A = ($('#matA-grid') && $('#matA-grid').querySelector('input.matrix-input-cell')) ? readMatrixGrid('#matA-grid') : parseMatrix($('#matA') ? $('#matA').value : '');
       const b = parseVector($('#vecBmat').value);
       
       if (!A || !b) {
@@ -359,6 +367,18 @@ function initMatrixOperations() {
       } catch (error) {
         alert('Error: ' + error.message);
       }
+    });
+
+    // Controles para crear grillas de matrices desde la UI
+    $('#btn-matA-create')?.addEventListener('click', () => {
+      const r = parseInt($('#matA-rows')?.value) || 2;
+      const c = parseInt($('#matA-cols')?.value) || 2;
+      buildMatrixGrid('#matA-grid', r, c, 'matA');
+    });
+    $('#btn-matB-create')?.addEventListener('click', () => {
+      const r = parseInt($('#matB-rows')?.value) || 2;
+      const c = parseInt($('#matB-cols')?.value) || 2;
+      buildMatrixGrid('#matB-grid', r, c, 'matB');
     });
 
   } catch (error) {

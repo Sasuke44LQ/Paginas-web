@@ -34,9 +34,9 @@ function formatNumber(num) {
 function parseVector(str) {
   if (!str) return null;
   
+  // aceptar múltiples formatos: '1,2,3' o '1 2 3' o '[1, 2, 3]' o multilinea
   const cleaned = str.replace(/[\[\]]/g, '').trim();
   if (!cleaned) return null;
-  
   const parts = cleaned.split(/[,\s]+/).filter(p => p);
   const numbers = parts.map(p => {
     const num = parseFloat(p);
@@ -50,22 +50,28 @@ function parseVector(str) {
 function parseMatrix(str) {
   if (!str) return null;
   
-  const cleaned = str.replace(/[\[\]]/g, '').trim();
+  // Aceptar filas separadas por nueva línea o por ';'. Elementos pueden separarse por comas o espacios.
+  const cleaned = str.replace(/\[|\]/g, '').trim();
   if (!cleaned) return null;
-  
-  const rows = cleaned.split(';').map(row => row.trim());
-  const matrix = rows.map(row => {
+
+  // dividir por saltos de línea o por punto y coma
+  const rawRows = cleaned.split(/\r?\n|;/).map(r => r.trim()).filter(r => r.length > 0);
+  if (rawRows.length === 0) return null;
+
+  const matrix = rawRows.map(row => {
+    // separar por comas o múltiples espacios
     const parts = row.split(/[,\s]+/).filter(p => p);
     const numbers = parts.map(p => {
       const num = parseFloat(p);
       return isNaN(num) ? null : num;
     });
-    
     if (numbers.includes(null)) return null;
     return numbers;
   });
-  
-  if (matrix.includes(null)) return null;
+
+  // validar que todas las filas tienen la misma longitud
+  const widths = matrix.map(r => r.length);
+  if (new Set(widths).size !== 1) return null;
   return matrix;
 }
 
@@ -96,7 +102,8 @@ function clearNode(node) {
 // Estado global para pasos (por sección: 'vectores' | 'matrices')
 const STEP_STATE = {
   vectores: { steps: [], idx: 0 },
-  matrices: { steps: [], idx: 0 }
+  matrices: { steps: [], idx: 0 },
+  practice: { steps: [], idx: 0 }
 };
 
 function getStepsMode() {
@@ -234,24 +241,99 @@ function printSteps(section) {
 
 function renderVector(container, vector) {
   clearNode(container);
-  const text = document.createElement('p');
-  text.textContent = vectorToString(vector);
-  container.appendChild(text);
+  const wrapper = document.createElement('div');
+  wrapper.className = 'vector-render';
+  vector.forEach(v => {
+    const span = document.createElement('span');
+    span.className = 'vector-chip';
+    span.textContent = formatNumber(v);
+    wrapper.appendChild(span);
+  });
+  container.appendChild(wrapper);
 }
 
 function renderMatrix(container, matrix) {
   clearNode(container);
-  matrix.forEach((row, i) => {
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'matrix-row';
+  const table = document.createElement('table');
+  table.className = 'matrix-table';
+  matrix.forEach(row => {
+    const tr = document.createElement('tr');
     row.forEach(val => {
-      const cell = document.createElement('span');
-      cell.className = 'matrix-cell';
-      cell.textContent = formatNumber(val);
-      rowDiv.appendChild(cell);
+      const td = document.createElement('td');
+      td.textContent = formatNumber(val);
+      tr.appendChild(td);
     });
-    container.appendChild(rowDiv);
+    table.appendChild(tr);
   });
+  container.appendChild(table);
+}
+
+// ============ GRILLA DE ENTRADA DE MATRICES (CASILLAS) ============
+
+function buildMatrixGrid(containerSelector, rows, cols, namePrefix = 'mat', values) {
+  const container = typeof containerSelector === 'string' ? $(containerSelector) : containerSelector;
+  if (!container) return;
+  clearNode(container);
+
+  const table = document.createElement('table');
+  table.className = 'matrix-input-table';
+  for (let i = 0; i < rows; i++) {
+    const tr = document.createElement('tr');
+    for (let j = 0; j < cols; j++) {
+      const td = document.createElement('td');
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.className = 'matrix-input-cell';
+      inp.style.padding = '6px';
+      inp.style.width = '72px';
+      inp.setAttribute('data-row', i);
+      inp.setAttribute('data-col', j);
+      inp.id = `${namePrefix}-${i}-${j}`;
+      if (values && values[i] && typeof values[i][j] !== 'undefined') inp.value = String(values[i][j]);
+      td.appendChild(inp);
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+  container.appendChild(table);
+}
+
+function readMatrixGrid(containerSelector) {
+  const container = typeof containerSelector === 'string' ? $(containerSelector) : containerSelector;
+  if (!container) return null;
+  const table = container.querySelector('table.matrix-input-table');
+  if (!table) return null;
+  const rows = Array.from(table.querySelectorAll('tr'));
+  const matrix = rows.map(tr => {
+    const cells = Array.from(tr.querySelectorAll('input.matrix-input-cell'));
+    const rowVals = cells.map(inp => {
+      const v = inp.value.trim();
+      const n = parseFloat(v);
+      return isNaN(n) ? null : n;
+    });
+    if (rowVals.includes(null)) return null;
+    return rowVals;
+  });
+  if (matrix.includes(null)) return null;
+  // validar anchuras
+  const widths = matrix.map(r => r.length);
+  if (new Set(widths).size !== 1) return null;
+  return matrix;
+}
+
+function setMatrixGridValues(containerSelector, matrix) {
+  const container = typeof containerSelector === 'string' ? $(containerSelector) : containerSelector;
+  if (!container) return;
+  const table = container.querySelector('table.matrix-input-table');
+  if (!table) return;
+  const rows = Array.from(table.querySelectorAll('tr'));
+  for (let i = 0; i < rows.length; i++) {
+    const cells = Array.from(rows[i].querySelectorAll('input.matrix-input-cell'));
+    for (let j = 0; j < cells.length; j++) {
+      if (matrix && matrix[i] && typeof matrix[i][j] !== 'undefined') cells[j].value = String(matrix[i][j]);
+      else cells[j].value = '';
+    }
+  }
 }
 
 // ============ VALIDACIÓN ============

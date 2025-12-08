@@ -45,6 +45,20 @@ function renderMatrix(container, m) {
   });
   container.appendChild(table);
 }
+
+8) Crear / Leer una grilla de entrada para matrices
+
+```javascript
+// Construye una grilla de inputs (container puede ser selector o elemento DOM)
+buildMatrixGrid('#matA-grid', 3, 3, 'matA', [[1,2,3],[4,5,6],[7,8,9]]);
+
+// Leer la grilla a una matriz de números (o null si hay celdas inválidas)
+const m = readMatrixGrid('#matA-grid');
+if (!m) alert('Matrices inválidas en la grilla');
+
+// Poblado desde código, usando setMatrixGridValues
+setMatrixGridValues('#matA-grid', [[1,2],[3,4]]);
+```
 ```
 
 4) Guardar en historial (ejemplo de formato)
